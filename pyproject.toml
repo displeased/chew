@@ -1,0 +1,15 @@
+[project]
+name = "chew"
+version = "0.1.0"
+description = "Bare-Bones parser combinator library"
+authors = [
+    {name = "Mickey Polito",email = "me@displeased.site"},
+]
+dependencies = []
+requires-python = ">=3.10"
+readme = "README.md"
+license = {text = "MIT"}
+
+[build-system]
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"
