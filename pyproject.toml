@@ -1,15 +1,25 @@
-[project]
+[tool.poetry]
 name = "chew"
-version = "0.1.0"
+version = "1.0.0"
 description = "Bare-Bones parser combinator library"
-authors = [
-    {name = "Mickey Polito",email = "me@displeased.site"},
-]
-dependencies = []
-requires-python = ">=3.10"
+authors = ["Mickey Polito <me@displeased.site>"]
+license = "MIT"
 readme = "README.md"
-license = {text = "MIT"}
+include = ["chew/py.typed"]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+
+
+[tool.poetry.group.dev.dependencies]
+mypy = "^1.5.1"
+black = "^23.9.1"
+pylint = "^2.17.5"
+python-semantic-release = "^8.0.8"
+
+[tool.semantic_release]
+version_variable = "pyproject.toml:version"
 
 [build-system]
-requires = ["pdm-backend"]
-build-backend = "pdm.backend"
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
