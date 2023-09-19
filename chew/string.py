@@ -36,7 +36,7 @@ from chew.types import (
     Parser,
     S,
 )
-from chew.error import Error, ErrorKind, map_kind
+from chew.error import Error, ErrorKind, map_kind, ignore_kind
 from chew.branch import alt
 from chew.generic import tag, is_a, take, take_while
 
@@ -117,14 +117,15 @@ def alpha0(sequence: str) -> Result[str, str]:
     """
     Recognizes zero or more uppercase alphabetic characters.
     """
-    return is_a(stdstring.ascii_letters)(sequence)
+    with ignore_kind(ErrorKind.IS_A):
+        return is_a(stdstring.ascii_letters)(sequence)
+    return (sequence, "")
 
 
 def alpha1(sequence: str) -> Result[str, str]:
     """
     Recognizes one or more alphabetic characters.
     """
-
     return _min_one(alpha0, ErrorKind.ALPHA)(sequence)
 
 
@@ -158,8 +159,9 @@ def digit0(sequence: str) -> Result[str, str]:
     """
     Recognizes zero or more ASCII numerical characters (0 - 9).
     """
-
-    return is_a(stdstring.digits)(sequence)
+    with ignore_kind(ErrorKind.IS_A):
+        return is_a(stdstring.digits)(sequence)
+    return (sequence, "")
 
 
 def digit1(sequence: str) -> Result[str, str]:
@@ -174,8 +176,9 @@ def hex_digit0(sequence: str) -> Result[str, str]:
     """
     Recognizes zero or more ASCII hexidecimal characters (0-9, A-F, a-f).
     """
-
-    return is_a(stdstring.hexdigits)(sequence)
+    with ignore_kind(ErrorKind.IS_A):
+        return is_a(stdstring.hexdigits)(sequence)
+    return (sequence, "")
 
 
 def hex_digit1(sequence: str) -> Result[str, str]:
@@ -197,7 +200,9 @@ def multispace0(sequence: str) -> Result[str, str]:
     """
     Recognizes zero or more spaces, tabs, carriage returns, and line feeds.
     """
-    return is_a(" \t\n\r")(sequence)
+    with ignore_kind(ErrorKind.IS_A):
+        return is_a(" \t\n\r")(sequence)
+    return (sequence, "")
 
 
 def multispace1(sequence: str) -> Result[str, str]:
@@ -225,7 +230,9 @@ def oct_digit0(sequence: str) -> Result[str, str]:
     """
     Recognizes zero or more octal characters (0-7).
     """
-    return is_a(stdstring.octdigits)(sequence)
+    with ignore_kind(ErrorKind.IS_A):
+        return is_a(stdstring.octdigits)(sequence)
+    return (sequence, "")
 
 
 def oct_digit1(sequence: str) -> Result[str, str]:
@@ -239,7 +246,9 @@ def space0(sequence: str) -> Result[str, str]:
     """
     Recognizes zero or more spaces and tabs.
     """
-    return is_a(" \t")(sequence)
+    with ignore_kind(ErrorKind.IS_A):
+        return is_a(" \t")(sequence)
+    return (sequence, "")
 
 
 def space1(sequence: str) -> Result[str, str]:

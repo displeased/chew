@@ -85,7 +85,8 @@ class TestGeneric(unittest.TestCase):
         self.assertEqual(is_a(stdstring.hexdigits)("D15EA5E"), ("", "D15EA5E"))
 
     def test_is_a_on_exhausted(self):
-        self.assertEqual(is_a(stdstring.hexdigits)(""), ("", ""))
+        with self.assertRaises(Error):
+            is_a(stdstring.hexdigits)("")
 
     def test_is_not(self):
         self.assertEqual(is_not(" \t\r\n")("Hello, World!"), (" World!", "Hello,"))
@@ -94,4 +95,5 @@ class TestGeneric(unittest.TestCase):
         self.assertEqual(is_not(" \t\r\n")("Sometimes\t"), ("\t", "Sometimes"))
 
     def test_is_not_on_exhausted(self):
-        self.assertEqual(is_not(" \t\r\n")(""), ("", ""))
+        with self.assertRaises(Error):
+            is_not(" \t\r\n")("")
