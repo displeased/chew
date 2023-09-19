@@ -108,3 +108,15 @@ def map_exception(etype: type[Exception], remaining: Parseable, kind: ErrorKind)
         if issubclass(etype, type(exception)) or isinstance(exception, etype):
             raise Error(remaining, kind, origin=exception)
         raise exception
+
+
+@contextlib.contextmanager
+def ignore_kind(kind: ErrorKind):
+    """
+    Context-Manager to ignore an ErrorKind.
+    """
+    try:
+        yield None
+    except Error as error:
+        if error.kind != kind:
+            raise error
