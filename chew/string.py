@@ -36,7 +36,7 @@ from chew.types import (
     Parser,
     S,
 )
-from chew.error import Error
+from chew.error import Error, ErrorKind, map_kind
 from chew.branch import alt
 from chew.generic import tag, is_a, take, take_while
 
@@ -46,10 +46,10 @@ from chew.generic import tag, is_a, take, take_while
 I = TypeVar("I", bound=Sized)
 
 
-def _min_one(wrapped: Parser[S, I]) -> Parser[S, I]:
+def _min_one(wrapped: Parser[S, I], error: ErrorKind) -> Parser[S, I]:
     """
-    A ParseResult with a sequence as its return value must have at least one
-    element.
+    Wraps the provided parser and raises an exception with the given kind if the
+    returned Parser result does not have at least one element.
     """
 
     def __min_one(sequence: S) -> Result[S, I]:
@@ -57,7 +57,7 @@ def _min_one(wrapped: Parser[S, I]) -> Parser[S, I]:
         (_, match) = result
 
         if len(match) == 0:
-            raise Error(sequence)
+            raise Error(sequence, error)
 
         return result
 
@@ -75,7 +75,7 @@ def char(character: str) -> StringParser:
         (_, nchar) = result
 
         if nchar != character:
-            raise Error(sequence)
+            raise Error(sequence, ErrorKind.CHAR)
 
         return result
 
@@ -92,7 +92,7 @@ def satisfy(cond: Matcher) -> StringParser:
         (current, item) = taker(sequence)
         if cond(item):
             return (current, item)
-        raise Error(current)
+        raise Error(current, ErrorKind.SATISFY)
 
     return _satisfy
 
@@ -125,7 +125,7 @@ def alpha1(sequence: str) -> Result[str, str]:
     Recognizes one or more alphabetic characters.
     """
 
-    return _min_one(alpha0)(sequence)
+    return _min_one(alpha0, ErrorKind.ALPHA)(sequence)
 
 
 def alphanum0(sequence: str) -> Result[str, str]:
@@ -143,14 +143,15 @@ def alphanum1(sequence: str) -> Result[str, str]:
     Recognizes one or more alphanumeric characters.
     """
 
-    return _min_one(alphanum0)(sequence)
+    return _min_one(alphanum0, ErrorKind.ALPHA_NUMERIC)(sequence)
 
 
 def crlf(sequence: str) -> Result[str, str]:
     """
     Matches an "\\r\\n".
     """
-    return tag("\r\n")(sequence)
+    with map_kind(ErrorKind.CRLF):
+        return tag("\r\n")(sequence)
 
 
 def digit0(sequence: str) -> Result[str, str]:
@@ -166,7 +167,7 @@ def digit1(sequence: str) -> Result[str, str]:
     Recognizes one or more ASCII numerical characters (0 - 9).
     """
 
-    return _min_one(digit0)(sequence)
+    return _min_one(digit0, ErrorKind.DIGIT)(sequence)
 
 
 def hex_digit0(sequence: str) -> Result[str, str]:
@@ -181,14 +182,15 @@ def hex_digit1(sequence: str) -> Result[str, str]:
     """
     Recognizes one or more ASCII hexidecimal characters (0-9, A-F, a-f).
     """
-    return _min_one(hex_digit0)(sequence)
+    return _min_one(hex_digit0, ErrorKind.HEX_DIGIT)(sequence)
 
 
 def line_ending(sequence: str) -> Result[str, str]:
     """
     Recognizes an end of line (both '\\n' and '\\r\\n').
     """
-    return alt([char("\n"), tag("\r\n")])(sequence)
+    with map_kind(ErrorKind.CRLF):
+        return alt([char("\n"), tag("\r\n")])(sequence)
 
 
 def multispace0(sequence: str) -> Result[str, str]:
@@ -202,7 +204,7 @@ def multispace1(sequence: str) -> Result[str, str]:
     """
     Recognizes one or more spaces, tabs, carriage returns, and line feeds.
     """
-    return _min_one(multispace0)(sequence)
+    return _min_one(multispace0, ErrorKind.MULTI_SPACE)(sequence)
 
 
 def newline(sequence: str) -> Result[str, str]:
@@ -230,7 +232,7 @@ def oct_digit1(sequence: str) -> Result[str, str]:
     """
     Recognizes one or more octal characters (0-7).
     """
-    return _min_one(oct_digit0)(sequence)
+    return _min_one(oct_digit0, ErrorKind.OCT_DIGIT)(sequence)
 
 
 def space0(sequence: str) -> Result[str, str]:
@@ -244,7 +246,7 @@ def space1(sequence: str) -> Result[str, str]:
     """
     Recognizes one or more spaces and tabs.
     """
-    return _min_one(space0)(sequence)
+    return _min_one(space0, ErrorKind.SPACE)(sequence)
 
 
 def tab(sequence: str) -> Result[str, str]:

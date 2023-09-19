@@ -3,10 +3,13 @@ Branch Combinators.
 """
 # pylint: disable=invalid-name
 __all__ = ["alt"]
-from typing import Iterable, TypeVar
-from chew.error import Error
+from typing import Iterable, Optional, TypeVar
+from chew.error import Error, ErrorKind
 from chew.types import Parser, Result, S
 
+# Shared Alternative Parser Return Value
+#
+# Generic return type of any given Parser passed to alt.
 T = TypeVar("T")
 
 
@@ -16,12 +19,15 @@ def alt(parsers: Iterable[Parser[S, T]]) -> Parser[S, T]:
     """
 
     def _alt(sequence: S) -> Result[S, T]:
+        last_error: Optional[Error] = None
         for parser in parsers:
             try:
                 return parser(sequence)
-            except Error as _:
-                pass
+            except Error as error:
+                last_error = error
 
-        raise Error(sequence)
+        if last_error is not None:
+            raise last_error
+        raise Error(sequence, ErrorKind.ALT)
 
     return _alt

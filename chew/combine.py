@@ -22,7 +22,7 @@ __all__ = [
     "verify",
 ]
 from typing import TypeVar, NoReturn, Optional
-from chew.error import Error
+from chew.error import Error, ErrorKind
 from chew.types import (
     Parser,
     Result,
@@ -93,7 +93,7 @@ def eof(sequence: S) -> Result[S, S]:
     Succeeds when we're at the end of the data.
     """
     if not seq_eof(sequence):
-        raise Error(sequence)
+        raise Error(sequence, ErrorKind.EOF)
 
     return (sequence, sequence)
 
@@ -102,7 +102,7 @@ def fail(sequence: S) -> Result[S, NoReturn]:
     """
     Always fails.
     """
-    raise Error(sequence)
+    raise Error(sequence, ErrorKind.FAIL)
 
 
 def flat_map(
@@ -155,7 +155,7 @@ def negate(parser: Parser[S, T]) -> Parser[S, None]:
             parser(sequence)
         except Error:
             return (sequence, None)
-        raise Error(sequence)
+        raise Error(sequence, ErrorKind.NEGATE)
 
     return _negate
 
@@ -264,7 +264,7 @@ def verify(parser: Parser[S, Y], verifier: Callable[[Y], bool]) -> Parser[S, Y]:
         (_, value) = result
 
         if not verifier(value):
-            raise Error(sequence)
+            raise Error(sequence, ErrorKind.VERIFY)
 
         return result
 

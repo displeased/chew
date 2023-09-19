@@ -4,7 +4,7 @@ Parser Wrappers for Python Literals.
 import string as stdstring
 from chew.combine import map_res
 from chew.generic import is_a
-from chew.error import Error
+from chew.error import ErrorKind, map_exception
 from chew.types import Result
 
 # Character Makeup of an Integer Literal
@@ -16,17 +16,13 @@ def int_literal(sequence: str) -> Result[str, int]:
     """
     Parses a decimal integer literal.
     """
-    try:
+    with map_exception(ValueError, sequence, ErrorKind.DIGIT):
         return map_res(is_a(INT_COMPONENTS), int)(sequence)
-    except ValueError as error:
-        raise Error(sequence) from error
 
 
 def float_literal(sequence: str) -> Result[str, float]:
     """
     Parses a float literal.
     """
-    try:
+    with map_exception(ValueError, sequence, ErrorKind.DIGIT):
         return map_res(is_a(FLOAT_COMPONENTS), float)(sequence)
-    except ValueError as error:
-        raise Error(sequence) from error
