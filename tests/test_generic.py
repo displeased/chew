@@ -3,7 +3,7 @@ Test cases for the `generic` module.
 """
 import unittest
 import string as stdstring
-from chew.error import ParseError
+from chew.error import Error
 from chew.generic import *
 
 
@@ -14,18 +14,18 @@ class TestGeneric(unittest.TestCase):
 
     def test_tag_fail(self):
         """Tag with no match."""
-        with self.assertRaises(ParseError):
+        with self.assertRaises(Error):
             tag("Hello")("Something")
 
     def test_take(self):
         self.assertEqual(take(6)("1234567"), ("7", "123456"))
 
     def test_take_overtake(self):
-        with self.assertRaises(ParseError):
+        with self.assertRaises(Error):
             take(6)("short")
 
     def test_take_on_exhausted(self):
-        with self.assertRaises(ParseError):
+        with self.assertRaises(Error):
             take(6)("")
 
     def test_take_till(self):

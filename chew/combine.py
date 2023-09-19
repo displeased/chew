@@ -22,10 +22,10 @@ __all__ = [
     "verify",
 ]
 from typing import TypeVar, NoReturn, Optional
-from chew.error import ParseError
+from chew.error import Error
 from chew.types import (
     Parser,
-    ParseResult,
+    Result,
     Callable,
     S,
 )
@@ -47,7 +47,7 @@ def all_consuming(child: Parser[S, Y]) -> Parser[S, Y]:
     Succeeds if all the input has been consumed by its child parser.
     """
 
-    def _all_consuming(sequence: S) -> ParseResult[S, Y]:
+    def _all_consuming(sequence: S) -> Result[S, Y]:
         (current, value) = child(sequence)
         eof(current)
         return (current, value)
@@ -60,7 +60,7 @@ def conditional(condition: bool, child: Parser[S, Y]) -> Parser[S, Optional[Y]]:
     Conditionally run a child parser on the input.
     """
 
-    def _conditional(sequence: S) -> ParseResult[S, Optional[Y]]:
+    def _conditional(sequence: S) -> Result[S, Optional[Y]]:
         if condition:
             return child(sequence)
 
@@ -75,7 +75,7 @@ def consumed(child: Parser[S, Y]) -> Parser[S, tuple[S, Y]]:
     output as a tuple.
     """
 
-    def _consumed(original: S) -> ParseResult[S, tuple[S, Y]]:
+    def _consumed(original: S) -> Result[S, tuple[S, Y]]:
         (remaining, value) = child(original)
         taken = len(original) - len(remaining)
 
@@ -88,21 +88,21 @@ def consumed(child: Parser[S, Y]) -> Parser[S, tuple[S, Y]]:
     return _consumed
 
 
-def eof(sequence: S) -> ParseResult[S, S]:
+def eof(sequence: S) -> Result[S, S]:
     """
     Succeeds when we're at the end of the data.
     """
     if not seq_eof(sequence):
-        raise ParseError(sequence)
+        raise Error(sequence)
 
     return (sequence, sequence)
 
 
-def fail(sequence: S) -> ParseResult[S, NoReturn]:
+def fail(sequence: S) -> Result[S, NoReturn]:
     """
     Always fails.
     """
-    raise ParseError(sequence)
+    raise Error(sequence)
 
 
 def flat_map(
@@ -113,7 +113,7 @@ def flat_map(
     parser over the rest of the input.
     """
 
-    def _flat_map(sequence: S) -> ParseResult[S, Y]:
+    def _flat_map(sequence: S) -> Result[S, Y]:
         (current, intermediate) = parser(sequence)
         return applied(intermediate)(current)
 
@@ -125,7 +125,7 @@ def map_res(parser: Parser[S, T], mapper: Callable[[T], Y]) -> Parser[S, Y]:
     Maps a function on the result of a parser.
     """
 
-    def _map_res(sequence: S) -> ParseResult[S, Y]:
+    def _map_res(sequence: S) -> Result[S, Y]:
         (current, value) = parser(sequence)
         return (current, mapper(value))
 
@@ -137,7 +137,7 @@ def map_parser(parser: Parser[S, S], applied_parser: Parser[S, Y]) -> Parser[S, 
     Applies a parser over the result of another one.
     """
 
-    def _map_parser(sequence: S) -> ParseResult[S, Y]:
+    def _map_parser(sequence: S) -> Result[S, Y]:
         (current, yielded) = parser(sequence)
         (_, value) = applied_parser(yielded)
         return (current, value)
@@ -150,12 +150,12 @@ def negate(parser: Parser[S, T]) -> Parser[S, None]:
     Succeeds if the child parser returns an error.
     """
 
-    def _negate(sequence: S) -> ParseResult[S, None]:
+    def _negate(sequence: S) -> Result[S, None]:
         try:
             parser(sequence)
-        except ParseError:
+        except Error:
             return (sequence, None)
-        raise ParseError(sequence)
+        raise Error(sequence)
 
     return _negate
 
@@ -165,10 +165,10 @@ def optional(parser: Parser[S, T]) -> Parser[S, Optional[T]]:
     Optional parser, will return None on a ParseError.
     """
 
-    def _optional(sequence: S) -> ParseResult[S, Optional[T]]:
+    def _optional(sequence: S) -> Result[S, Optional[T]]:
         try:
             return parser(sequence)
-        except ParseError:
+        except Error:
             return (sequence, None)
 
     return _optional
@@ -179,7 +179,7 @@ def peek(parser: Parser[S, T]) -> Parser[S, T]:
     Tries to apply its parser without consuming the input.
     """
 
-    def _peek(sequence: S) -> ParseResult[S, T]:
+    def _peek(sequence: S) -> Result[S, T]:
         (_, value) = parser(sequence)
         return (sequence, value)
 
@@ -192,7 +192,7 @@ def recognize(parser: Parser[S, T]) -> Parser[S, S]:
     value.
     """
 
-    def _recognize(sequence: S) -> ParseResult[S, S]:
+    def _recognize(sequence: S) -> Result[S, S]:
         (remaining, _) = parser(sequence)
         num_consumed = len(sequence) - len(remaining)
 
@@ -207,7 +207,7 @@ def recognize(parser: Parser[S, T]) -> Parser[S, S]:
     return _recognize
 
 
-def rest(sequence: S) -> ParseResult[S, S]:
+def rest(sequence: S) -> Result[S, S]:
     """
     Return the remaining input as output.
     """
@@ -222,7 +222,7 @@ def rest(sequence: S) -> ParseResult[S, S]:
     return divided
 
 
-def rest_len(sequence: S) -> ParseResult[S, int]:
+def rest_len(sequence: S) -> Result[S, int]:
     """
     Return the length of the remaining input.
     """
@@ -235,7 +235,7 @@ def success(value: T) -> Parser[S, T]:
     Always succeeds yielding the given value.
     """
 
-    def _success(sequence: S) -> ParseResult[S, T]:
+    def _success(sequence: S) -> Result[S, T]:
         return (sequence, value)
 
     return _success
@@ -246,7 +246,7 @@ def noerr_value(value: T, parser: Parser[S, Y]) -> Parser[S, T]:
     Returns the provided value if the child parser succeeds.
     """
 
-    def _noerr_value(sequence: S) -> ParseResult[S, T]:
+    def _noerr_value(sequence: S) -> Result[S, T]:
         (current, _) = parser(sequence)
         return (current, value)
 
@@ -259,12 +259,12 @@ def verify(parser: Parser[S, Y], verifier: Callable[[Y], bool]) -> Parser[S, Y]:
     function.
     """
 
-    def _verify(sequence: S) -> ParseResult[S, Y]:
+    def _verify(sequence: S) -> Result[S, Y]:
         result = parser(sequence)
         (_, value) = result
 
         if not verifier(value):
-            raise ParseError(sequence)
+            raise Error(sequence)
 
         return result
 

@@ -4,7 +4,7 @@ Test cases for the `branch` module.
 
 import unittest
 from chew.string import alpha1, digit1
-from chew.error import ParseError
+from chew.error import Error
 from chew.branch import alt
 
 
@@ -16,5 +16,5 @@ class TestBranch(unittest.TestCase):
         self.assertEqual(alt((alpha1, digit1))("123456"), ("", "123456"))
 
     def test_alt_both_fail(self):
-        with self.assertRaises(ParseError):
+        with self.assertRaises(Error):
             alt((alpha1, digit1))(" ")

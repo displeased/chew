@@ -5,7 +5,7 @@ Combinators applying parsers in sequence.
 __all__ = ["multiple", "delimited", "pair", "preceded", "separated_pair", "terminated"]
 
 from typing import Iterable, Sequence, TypeVar
-from chew.types import Parser, ParseResult, S
+from chew.types import Parser, Result, S
 
 # Generic Yielded Element
 #
@@ -23,7 +23,7 @@ def multiple(parsers: Iterable[Parser[S, A]]) -> Parser[S, Sequence[A]]:
     Matches a sequence of parsers.
     """
 
-    def _multiple(sequence: S) -> ParseResult[S, Sequence[A]]:
+    def _multiple(sequence: S) -> Result[S, Sequence[A]]:
         current = sequence
         values: list[A] = []
         for parser in parsers:
@@ -44,7 +44,7 @@ def delimited(
     and discards it.
     """
 
-    def _delimited(sequence: S) -> ParseResult[S, Y]:
+    def _delimited(sequence: S) -> Result[S, Y]:
         (current, values) = multiple([left, middle, right])(sequence)
         return (current, values[1])  # type: ignore
 
@@ -64,7 +64,7 @@ def preceded(left: Parser[S, A], right: Parser[S, Y]) -> Parser[S, Y]:
     object from the second parser.
     """
 
-    def _preceeded(sequence: S) -> ParseResult[S, Y]:
+    def _preceeded(sequence: S) -> Result[S, Y]:
         (current, values) = multiple([left, right])(sequence)
         return (current, values[1])  # type: ignore
 
@@ -79,7 +79,7 @@ def separated_pair(
     parser and discards it, then gets an object from the right parser.
     """
 
-    def _separated_pair(sequence: S) -> ParseResult[S, Sequence[Y]]:
+    def _separated_pair(sequence: S) -> Result[S, Sequence[Y]]:
         (current, values) = multiple([left, middle, right])(sequence)
         (lvalue, _, rvalue) = values
 
@@ -94,7 +94,7 @@ def terminated(left: Parser[S, Y], right: Parser[S, A]) -> Parser[S, Y]:
     parser and discards it.
     """
 
-    def _terminated(sequence: S) -> ParseResult[S, Y]:
+    def _terminated(sequence: S) -> Result[S, Y]:
         (current, values) = multiple([left, right])(sequence)
         return (current, values[0])  # type: ignore
 

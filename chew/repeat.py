@@ -4,7 +4,7 @@ Combinators applying their child parser multiple times.
 __all__ = ["count", "length_count", "length_data", "length_value"]
 # pylint: disable=invalid-name
 from typing import Sequence, TypeVar
-from chew.types import Parser, ParseResult, S
+from chew.types import Parser, Result, S
 from chew.generic import take
 
 # Generic Yielded Element
@@ -18,7 +18,7 @@ def count(parser: Parser[S, Y], times: int) -> Parser[S, Sequence[Y]]:
     Repeat a Parser parser "times" times, collecting the results into a list.
     """
 
-    def _count(sequence: S) -> ParseResult[S, Sequence[Y]]:
+    def _count(sequence: S) -> Result[S, Sequence[Y]]:
         values: list[Y] = []
         current = sequence
 
@@ -39,7 +39,7 @@ def length_count(
     many times.
     """
 
-    def _length_count(sequence: S) -> ParseResult[S, Sequence[Y]]:
+    def _length_count(sequence: S) -> Result[S, Sequence[Y]]:
         results: list[Y] = []
         current = sequence
 
@@ -62,7 +62,7 @@ def length_data(num_parser: Parser[S, int]) -> Parser[S, S]:
     size.
     """
 
-    def _length_data(sequence: S) -> ParseResult[S, S]:
+    def _length_data(sequence: S) -> Result[S, S]:
         current = sequence
 
         (current, times) = num_parser(current)
@@ -83,7 +83,7 @@ def length_value(
     size, then applies the second parser on that subslice.
     """
 
-    def _length_value(sequence: S) -> ParseResult[S, Y]:
+    def _length_value(sequence: S) -> Result[S, Y]:
         current = sequence
 
         (current, subslice) = length_data(num_parser)(current)

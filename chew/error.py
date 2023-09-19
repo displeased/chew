@@ -3,15 +3,15 @@ Error handling facilities.
 """
 import dataclasses
 from typing import Optional
-from chew.types import ParseSequence
+from chew.types import Parseable
 
 
 @dataclasses.dataclass
-class ParseError(Exception):
+class Error(Exception):
     """
     A Parse Error.
     """
 
-    current: ParseSequence
+    current: Parseable
     msg: Optional[str] = None
     underlying: Optional[Exception] = None

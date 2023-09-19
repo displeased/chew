@@ -31,12 +31,12 @@ from typing import Sequence, TypeVar, Sized
 import string as stdstring
 from chew.types import (
     StringParser,
-    ParseResult,
+    Result,
     Matcher,
     Parser,
     S,
 )
-from chew.error import ParseError
+from chew.error import Error
 from chew.branch import alt
 from chew.generic import tag, is_a, take, take_while
 
@@ -52,12 +52,12 @@ def _min_one(wrapped: Parser[S, I]) -> Parser[S, I]:
     element.
     """
 
-    def __min_one(sequence: S) -> ParseResult[S, I]:
+    def __min_one(sequence: S) -> Result[S, I]:
         result = wrapped(sequence)
         (_, match) = result
 
         if len(match) == 0:
-            raise ParseError(sequence)
+            raise Error(sequence)
 
         return result
 
@@ -69,13 +69,13 @@ def char(character: str) -> StringParser:
     Matches a single character.
     """
 
-    def _char(sequence: str) -> ParseResult[str, str]:
+    def _char(sequence: str) -> Result[str, str]:
         taker: Parser[str, str] = take(1)
         result = taker(sequence)
         (_, nchar) = result
 
         if nchar != character:
-            raise ParseError(sequence)
+            raise Error(sequence)
 
         return result
 
@@ -87,12 +87,12 @@ def satisfy(cond: Matcher) -> StringParser:
     Recognizes one character and check that it satisfies a predicate.
     """
 
-    def _satisfy(sequence: str) -> ParseResult:
+    def _satisfy(sequence: str) -> Result:
         taker: Parser[str, str] = take(1)
         (current, item) = taker(sequence)
         if cond(item):
             return (current, item)
-        raise ParseError(current)
+        raise Error(current)
 
     return _satisfy
 
@@ -113,14 +113,14 @@ def none_of(characters: Sequence[str]) -> StringParser:
     return satisfy(lambda c: c not in characters)
 
 
-def alpha0(sequence: str) -> ParseResult[str, str]:
+def alpha0(sequence: str) -> Result[str, str]:
     """
     Recognizes zero or more uppercase alphabetic characters.
     """
     return is_a(stdstring.ascii_letters)(sequence)
 
 
-def alpha1(sequence: str) -> ParseResult[str, str]:
+def alpha1(sequence: str) -> Result[str, str]:
     """
     Recognizes one or more alphabetic characters.
     """
@@ -128,7 +128,7 @@ def alpha1(sequence: str) -> ParseResult[str, str]:
     return _min_one(alpha0)(sequence)
 
 
-def alphanum0(sequence: str) -> ParseResult[str, str]:
+def alphanum0(sequence: str) -> Result[str, str]:
     """
     Recognizes zero or more alphanumeric characters.
     """
@@ -138,7 +138,7 @@ def alphanum0(sequence: str) -> ParseResult[str, str]:
     return take_while(str.isalnum)(sequence)  # type: ignore
 
 
-def alphanum1(sequence: str) -> ParseResult[str, str]:
+def alphanum1(sequence: str) -> Result[str, str]:
     """
     Recognizes one or more alphanumeric characters.
     """
@@ -146,14 +146,14 @@ def alphanum1(sequence: str) -> ParseResult[str, str]:
     return _min_one(alphanum0)(sequence)
 
 
-def crlf(sequence: str) -> ParseResult[str, str]:
+def crlf(sequence: str) -> Result[str, str]:
     """
     Matches an "\\r\\n".
     """
     return tag("\r\n")(sequence)
 
 
-def digit0(sequence: str) -> ParseResult[str, str]:
+def digit0(sequence: str) -> Result[str, str]:
     """
     Recognizes zero or more ASCII numerical characters (0 - 9).
     """
@@ -161,7 +161,7 @@ def digit0(sequence: str) -> ParseResult[str, str]:
     return is_a(stdstring.digits)(sequence)
 
 
-def digit1(sequence: str) -> ParseResult[str, str]:
+def digit1(sequence: str) -> Result[str, str]:
     """
     Recognizes one or more ASCII numerical characters (0 - 9).
     """
@@ -169,7 +169,7 @@ def digit1(sequence: str) -> ParseResult[str, str]:
     return _min_one(digit0)(sequence)
 
 
-def hex_digit0(sequence: str) -> ParseResult[str, str]:
+def hex_digit0(sequence: str) -> Result[str, str]:
     """
     Recognizes zero or more ASCII hexidecimal characters (0-9, A-F, a-f).
     """
@@ -177,77 +177,77 @@ def hex_digit0(sequence: str) -> ParseResult[str, str]:
     return is_a(stdstring.hexdigits)(sequence)
 
 
-def hex_digit1(sequence: str) -> ParseResult[str, str]:
+def hex_digit1(sequence: str) -> Result[str, str]:
     """
     Recognizes one or more ASCII hexidecimal characters (0-9, A-F, a-f).
     """
     return _min_one(hex_digit0)(sequence)
 
 
-def line_ending(sequence: str) -> ParseResult[str, str]:
+def line_ending(sequence: str) -> Result[str, str]:
     """
     Recognizes an end of line (both '\\n' and '\\r\\n').
     """
     return alt([char("\n"), tag("\r\n")])(sequence)
 
 
-def multispace0(sequence: str) -> ParseResult[str, str]:
+def multispace0(sequence: str) -> Result[str, str]:
     """
     Recognizes zero or more spaces, tabs, carriage returns, and line feeds.
     """
     return is_a(" \t\n\r")(sequence)
 
 
-def multispace1(sequence: str) -> ParseResult[str, str]:
+def multispace1(sequence: str) -> Result[str, str]:
     """
     Recognizes one or more spaces, tabs, carriage returns, and line feeds.
     """
     return _min_one(multispace0)(sequence)
 
 
-def newline(sequence: str) -> ParseResult[str, str]:
+def newline(sequence: str) -> Result[str, str]:
     """
     Matches a newline character '\\n'.
     """
     return char("\n")(sequence)
 
 
-def not_line_ending(sequence: str) -> ParseResult[str, str]:
+def not_line_ending(sequence: str) -> Result[str, str]:
     """
     Recognizes a string of any character except '\\r\\n' or '\\n'.
     """
     return take_while(lambda el: el not in "\r\n")(sequence)  # type: ignore
 
 
-def oct_digit0(sequence: str) -> ParseResult[str, str]:
+def oct_digit0(sequence: str) -> Result[str, str]:
     """
     Recognizes zero or more octal characters (0-7).
     """
     return is_a(stdstring.octdigits)(sequence)
 
 
-def oct_digit1(sequence: str) -> ParseResult[str, str]:
+def oct_digit1(sequence: str) -> Result[str, str]:
     """
     Recognizes one or more octal characters (0-7).
     """
     return _min_one(oct_digit0)(sequence)
 
 
-def space0(sequence: str) -> ParseResult[str, str]:
+def space0(sequence: str) -> Result[str, str]:
     """
     Recognizes zero or more spaces and tabs.
     """
     return is_a(" \t")(sequence)
 
 
-def space1(sequence: str) -> ParseResult[str, str]:
+def space1(sequence: str) -> Result[str, str]:
     """
     Recognizes one or more spaces and tabs.
     """
     return _min_one(space0)(sequence)
 
 
-def tab(sequence: str) -> ParseResult[str, str]:
+def tab(sequence: str) -> Result[str, str]:
     """
     Matches a tab character.
     """

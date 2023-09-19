@@ -2,8 +2,8 @@
 Generic parser generators.
 """
 __all__ = ["take", "take_till", "take_while", "tag", "is_a", "is_not"]
-from chew.error import ParseError
-from chew.types import Parser, Matcher, ParseResult, S
+from chew.error import Error
+from chew.types import Parser, Matcher, Result, S
 from chew.primitive import take as seq_take, next_item, peek, eof
 
 
@@ -14,10 +14,10 @@ def take(count: int) -> Parser[S, S]:
     Returns an error if the stream was exhausted in the process.
     """
 
-    def _take(sequence: S) -> ParseResult[S, S]:
+    def _take(sequence: S) -> Result[S, S]:
         result = seq_take(sequence, count)
         if result is None:
-            raise ParseError(sequence)
+            raise Error(sequence)
 
         return result
 
@@ -49,7 +49,7 @@ def take_till(cond: Matcher) -> Parser[S, S]:
     Take from the state until the condition is true.
     """
 
-    def _take_till(sequence: S) -> ParseResult[S, S]:
+    def _take_till(sequence: S) -> Result[S, S]:
         if eof(sequence):
             return (sequence, sequence)
 
@@ -65,7 +65,7 @@ def take_while(cond: Matcher) -> Parser[S, S]:
     Take from the state while the condition is true.
     """
 
-    def _take_while(sequence: S) -> ParseResult:
+    def _take_while(sequence: S) -> Result:
         if eof(sequence):
             return (sequence, sequence)
 
@@ -81,13 +81,13 @@ def tag(match: S) -> Parser[S, S]:
     Matches & Consumes a sequence of elements.
     """
 
-    def _tag(sequence: S) -> ParseResult[S, S]:
+    def _tag(sequence: S) -> Result[S, S]:
         taker: Parser[S, S] = take(len(match))
         (current, existing) = taker(sequence)
 
         for item, token in zip(match, existing):
             if item != token:
-                raise ParseError(current)
+                raise Error(current)
 
         return (current, match)
 
@@ -99,7 +99,7 @@ def is_a(items: S) -> Parser[S, S]:
     Returns the longest slice whose elements are in the sequence of items.
     """
 
-    def _is_a(sequence: S) -> ParseResult[S, S]:
+    def _is_a(sequence: S) -> Result[S, S]:
         taker: Parser[S, S] = take_while(lambda el: el in items)
         return taker(sequence)
 
@@ -112,7 +112,7 @@ def is_not(items: S) -> Parser[S, S]:
     items.
     """
 
-    def _is_not(sequence: S) -> ParseResult[S, S]:
+    def _is_not(sequence: S) -> Result[S, S]:
         taker: Parser[S, S] = take_while(lambda el: el not in items)
         return taker(sequence)
 

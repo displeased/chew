@@ -3,7 +3,7 @@ Test cases for the `sequence` module.
 """
 import unittest
 from chew.string import alpha1, digit1
-from chew.error import ParseError
+from chew.error import Error
 from chew.generic import tag
 from chew.sequence import *
 
@@ -15,7 +15,7 @@ class TestSequence(unittest.TestCase):
         )
 
     def test_multiple_on_incomplete(self):
-        with self.assertRaises(ParseError):
+        with self.assertRaises(Error):
             multiple([digit1, alpha1, digit1])("123def")
 
     def test_delimited(self):
@@ -31,11 +31,11 @@ class TestSequence(unittest.TestCase):
         )
 
     def test_delimited_on_exhausted(self):
-        with self.assertRaises(ParseError):
+        with self.assertRaises(Error):
             delimited(tag("("), tag("abc"), tag(")"))("")
 
     def test_delimited_on_no_match(self):
-        with self.assertRaises(ParseError):
+        with self.assertRaises(Error):
             delimited(tag("("), tag("abc"), tag(")"))("123")
 
     def test_pair(self):
@@ -47,11 +47,11 @@ class TestSequence(unittest.TestCase):
         )
 
     def test_pair_on_exhausted(self):
-        with self.assertRaises(ParseError):
+        with self.assertRaises(Error):
             pair(tag("abc"), tag("efg"))("")
 
     def test_pair_on_no_match(self):
-        with self.assertRaises(ParseError):
+        with self.assertRaises(Error):
             pair(tag("abc"), tag("efg"))("123")
 
     def test_preceded(self):
@@ -61,11 +61,11 @@ class TestSequence(unittest.TestCase):
         self.assertEqual(preceded(tag("abc"), tag("efg"))("abcefghij"), ("hij", "efg"))
 
     def test_preceded_on_exhausted(self):
-        with self.assertRaises(ParseError):
+        with self.assertRaises(Error):
             preceded(tag("abc"), tag("efg"))("")
 
     def test_preceded_on_no_match(self):
-        with self.assertRaises(ParseError):
+        with self.assertRaises(Error):
             preceded(tag("abc"), tag("efg"))("123")
 
     def test_separated_pair(self):
@@ -81,11 +81,11 @@ class TestSequence(unittest.TestCase):
         )
 
     def test_separated_pair_on_exhausted(self):
-        with self.assertRaises(ParseError):
+        with self.assertRaises(Error):
             separated_pair(tag("abc"), tag("|"), tag("efg"))("")
 
     def test_separated_pair_on_no_match(self):
-        with self.assertRaises(ParseError):
+        with self.assertRaises(Error):
             separated_pair(tag("abc"), tag("|"), tag("efg"))("123")
 
     def test_terminated(self):
@@ -97,9 +97,9 @@ class TestSequence(unittest.TestCase):
         )
 
     def test_terminated_on_exhausted(self):
-        with self.assertRaises(ParseError):
+        with self.assertRaises(Error):
             terminated(tag("abc"), tag("efg"))("")
 
     def test_terminated_on_no_match(self):
-        with self.assertRaises(ParseError):
+        with self.assertRaises(Error):
             terminated(tag("abc"), tag("efg"))("123")
