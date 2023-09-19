@@ -80,20 +80,20 @@ def take_while(cond: Matcher) -> Parser[S, S]:
     return _take_while
 
 
-def tag(match: S) -> Parser[S, S]:
+def tag(to_match: S) -> Parser[S, S]:
     """
     Matches & Consumes a sequence of elements.
     """
 
     def _tag(sequence: S) -> Result[S, S]:
-        taker: Parser[S, S] = take(len(match))
-        (current, existing) = taker(sequence)
+        taker: Parser[S, S] = take(len(to_match))
+        (current, next_items) = taker(sequence)
 
-        for item, token in zip(match, existing):
-            if item != token:
+        for expected, existing in zip(to_match, next_items):
+            if existing != expected:
                 raise Error(current, ErrorKind.TAG)
 
-        return (current, match)
+        return (current, to_match)
 
     return _tag
 
