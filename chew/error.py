@@ -3,6 +3,7 @@ Error handling facilities.
 """
 # pylint: disable=raise-missing-from
 from __future__ import annotations
+from typing import Optional
 import enum
 import contextlib
 import dataclasses
@@ -72,6 +73,7 @@ class Error(Exception):
 
     remaining: Parseable
     kind: ErrorKind
+    origin: Optional[Exception] = None
 
     def as_int(self) -> int:
         """Gets the kind as an int."""
@@ -81,7 +83,7 @@ class Error(Exception):
         """
         Create a new Error with the same values but a different ErrorKind.
         """
-        return Error(self.remaining, kind)
+        return Error(self.remaining, kind, origin=self)
 
 
 @contextlib.contextmanager
