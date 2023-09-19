@@ -96,15 +96,13 @@ def map_kind(kind: ErrorKind):
 
 
 @contextlib.contextmanager
-def map_exception(
-    exception_type: type[Exception], remaining: Parseable, kind: ErrorKind
-):
+def map_exception(etype: type[Exception], remaining: Parseable, kind: ErrorKind):
     """
     Context-manager to map aribtrary exceptions to an Error.
     """
     try:
         yield None
     except Exception as exception:
-        if isinstance(exception, exception_type):
+        if issubclass(exception, etype) or isinstance(exception, etype):
             raise Error(remaining, kind)
         raise exception
