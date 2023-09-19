@@ -16,7 +16,7 @@ def int_literal(sequence: str) -> Result[str, int]:
     """
     Parses a decimal integer literal.
     """
-    with map_exception(ValueError, sequence, ErrorKind.DIGIT):
+    with map_exception(ValueError, sequence, ErrorKind.INTEGER):
         return map_res(is_a(INT_COMPONENTS), int)(sequence)
 
 
@@ -24,5 +24,5 @@ def float_literal(sequence: str) -> Result[str, float]:
     """
     Parses a float literal.
     """
-    with map_exception(ValueError, sequence, ErrorKind.DIGIT):
+    with map_exception(ValueError, sequence, ErrorKind.FLOAT):
         return map_res(is_a(FLOAT_COMPONENTS), float)(sequence)
