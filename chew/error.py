@@ -103,6 +103,6 @@ def map_exception(etype: type[Exception], remaining: Parseable, kind: ErrorKind)
     try:
         yield None
     except Exception as exception:
-        if issubclass(exception, etype) or isinstance(exception, etype):
-            raise Error(remaining, kind)
+        if issubclass(etype, type(exception)) or isinstance(exception, etype):
+            raise Error(remaining, kind, origin=exception)
         raise exception
