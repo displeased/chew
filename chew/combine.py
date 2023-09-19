@@ -22,7 +22,7 @@ __all__ = [
     "verify",
 ]
 from typing import TypeVar, NoReturn, Optional
-from chew.error import Error, ErrorKind
+from chew.error import Error, ErrorKind, map_exception
 from chew.types import (
     Parser,
     Result,
@@ -126,8 +126,14 @@ def map_res(parser: Parser[S, T], mapper: Callable[[T], Y]) -> Parser[S, Y]:
     """
 
     def _map_res(sequence: S) -> Result[S, Y]:
-        (current, value) = parser(sequence)
-        return (current, mapper(value))
+        (current, to_convert) = parser(sequence)
+
+        # intercept any Exception raised by our conversion function, turning it
+        # into an Error with the correct ErrorKind
+        with map_exception(Exception, current, ErrorKind.MAP_RES):
+            value: Y = mapper(to_convert)
+
+        return (current, value)
 
     return _map_res
 
@@ -214,9 +220,8 @@ def rest(sequence: S) -> Result[S, S]:
     if len(sequence) == 0:
         return (sequence, sequence)
 
+    # SAFETY: we should always be able to take from the stream.
     divided = take(sequence, len(sequence))
-    # SAFETY: We should always be able to take from the stream to the point of
-    # exhaustion.
     assert divided is not None
 
     return divided
