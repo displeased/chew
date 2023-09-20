@@ -5,7 +5,10 @@ description = "Bare-Bones parser combinator library"
 authors = ["Mickey Polito <me@displeased.site>"]
 license = "MIT"
 readme = "README.md"
-include = ["chew/py.typed"]
+packages = [
+    {include = "chew"},
+    {include = "chew/py.typed"}
+]
 
 [tool.poetry.dependencies]
 python = "^3.10"
