@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "chew"
-version = "2.0.0"
+version = "2.0.1"
 description = "Bare-Bones parser combinator library"
 authors = ["Mickey Polito <me@displeased.site>"]
 license = "MIT"
