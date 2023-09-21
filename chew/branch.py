@@ -28,6 +28,6 @@ def alt(parsers: Iterable[Parser[S, T]]) -> Parser[S, T]:
 
         if last_error is not None:
             raise last_error
-        raise Error(sequence, ErrorKind.ALT)
+        raise Error(sequence, ErrorKind.ALT)  # pragma: no cover
 
     return _alt
