@@ -9,6 +9,9 @@ TEST_STRING = "Hello World!\nI love Snails!\nThat is All."
 
 
 class TestPrimitive(unittest.TestCase):
+    def test_take_on_exhausted(self):
+        self.assertEqual(take("", 1), None)
+
     def test_next_item_on_exhausted(self):
         self.assertEqual(next_item(""), None)
 
