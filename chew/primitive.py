@@ -1,7 +1,7 @@
 """
 Primitive Operations on Sequences.
 """
-__all__ = ["eof", "peek", "take", "next_item", "at_line"]
+__all__ = ["eof", "peek", "take", "next_item", "at_line", "at_pos"]
 from typing import Optional
 from chew.types import S, E
 
@@ -65,14 +65,26 @@ def _consumed(original: str, remaining: str) -> str:
 
 def at_line(original: str, remaining: str) -> int:
     """
-    Counts the number of newlines in the derived consumed stream to get the
-    current Line Index (Display Line Number = Line Index + 1).
+    Gets the current line number of the consumed input.
+    """
+    (line, _) = at_pos(original, remaining)
+    return line
+
+
+def at_pos(original: str, remaining: str) -> tuple[int, int]:
+    """
+    Gets the position of the remaining input as a tuple of the line number
+    (0-indexed) and, the line character index.
     """
     consumed = _consumed(original, remaining)
 
-    newlines = 0
-    for char in consumed:
-        if char == "\n":
-            newlines += 1
+    num_lines = 0
+    latest_index = 0
 
-    return newlines
+    for i, char in enumerate(consumed):
+        if char == "\n":
+            num_lines += 1
+            latest_index = i
+
+    char_index = len(consumed) - latest_index
+    return (num_lines, char_index)
