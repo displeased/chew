@@ -55,13 +55,20 @@ def next_item(sequence: S) -> Optional[tuple[S, E]]:
     return (leftover, current)
 
 
+def _consumed(original: str, remaining: str) -> str:
+    """
+    Returns the input that has been consumed so far.
+    """
+    clen = len(original) - len(remaining)
+    return original[:clen]
+
+
 def at_line(original: str, remaining: str) -> int:
     """
     Counts the number of newlines in the derived consumed stream to get the
     current Line Index (Display Line Number = Line Index + 1).
     """
-    consumed_len: int = len(original) - len(remaining)
-    consumed = original[:consumed_len]
+    consumed = _consumed(original, remaining)
 
     newlines = 0
     for char in consumed:
