@@ -29,3 +29,6 @@ class TestPrimitive(unittest.TestCase):
 
     def test_at_line_on_exhausted(self):
         self.assertEqual(at_line("", ""), 0)
+
+    def test_at_pos(self):
+        self.assertEqual(at_pos(TEST_STRING, "All."), (2, 9))
