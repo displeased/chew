@@ -2,209 +2,83 @@
 
 
 
-## v2.0.0 (2023-09-19)
+## v2.1.0 (2023-09-21)
 
-### Breaking
+### Build
 
-* refactor!: refined ErrorKind variants and impl changes ([`fd80921`](https://github.com/srv/git/chew/commit/fd809214378b4ad06c1e685c05e2b974b3fae6f3))
-
-* refactor!: changed is_a and is_not to fail on no match ([`19eafe5`](https://github.com/srv/git/chew/commit/19eafe51eaa1541a1773a3bf554dd5e93cce2fba))
-
-* refactor!: added ErrorKind(s) to Error values ([`2f46bb6`](https://github.com/srv/git/chew/commit/2f46bb642b196221d33472fdbc68b1092fd6550b))
-
-* refactor!: changed names of core types ([`5c651c9`](https://github.com/srv/git/chew/commit/5c651c938532aeed5f1c92e781bd09a0ab077450))
-
-### Feature
-
-* feat: added function for ignoring an ErrorKind to error module ([`8289b8d`](https://github.com/srv/git/chew/commit/8289b8d393aab10c0293c60204b59a48da0f7a48))
-
-* feat: added the ability to chain errors with origins ([`d928698`](https://github.com/srv/git/chew/commit/d92869889629369700dea669f55b8a08606eb958))
-
-### Fix
-
-* fix: fixed Exception type detection ([`e42cbed`](https://github.com/srv/git/chew/commit/e42cbedc0ed0437d4060907c26d711650abbf80b))
-
-* fix: fixed Exception type detection ([`6dabc0c`](https://github.com/srv/git/chew/commit/6dabc0cf4759f6f127cc93c33e286b805e1a1202))
-
-### Refactor
-
-* refactor: changed naming scheme of variable in tag ([`3729858`](https://github.com/srv/git/chew/commit/37298587e1f1e831a8016bd6524c5f76f5bd37e6))
-
-* refactor: changed `map_res` error return semantics ([`603fc83`](https://github.com/srv/git/chew/commit/603fc83f9a048f1bcf5dcf8b14fcbfa1e30fc10a))
-
-
-## v1.0.0 (2023-09-19)
+* build: changed semantic-release behavior ([`0ca54fc`](https://github.com/srv/git/chew/commit/0ca54fc0ff517f37c278e22e43a8f4b54174678c))
 
 ### Chore
 
-* chore: version 1.0.0 release
+* chore: merge branch &#39;main&#39; of origin ([`9e7b190`](https://github.com/srv/git/chew/commit/9e7b1909a20b6ed859671f227bbb7f862b7061a0))
 
-* feat: added basic parser combinators
+### Feature
 
-    Added a host of basic parser combinators and a basic framework for
-    parsing, including all parsing types.
+* feat: added new function for getting the consumed position
 
-* fix: fixed multiple in sequence&#39;s return type
+Added a new function at_pos for getting the exact location (both line
+and character number) of the consumed input. ([`b303e22`](https://github.com/srv/git/chew/commit/b303e22488471f110759b37d34e5acec36caf009))
 
-    Made multiple return an actual Parser to improve nesting.
+### Refactor
 
-* fix: improved result checking for multiple results
+* refactor: created function for getting consumed input ([`453fed4`](https://github.com/srv/git/chew/commit/453fed426e79b0b479468c1fb3f9f9db94c8e31d))
 
-    Improved checking for multiple results by clarifying that the Sized
-    interface must apply to the returned value.
+* refactor: removed impossible branch from coverage testing ([`9d6f85e`](https://github.com/srv/git/chew/commit/9d6f85e8d16c935df02cd31754d2f56446e87abf))
 
-* refactor: added better typing for string parsing
+### Test
 
-* build: added Makefile as a command runner
+* test: added test cases for error functionality ([`ad4d68a`](https://github.com/srv/git/chew/commit/ad4d68a9ebf435c3f84f7fc41ef45d12209314d8))
 
-* refactor: modified parsing to be exception-based
+* test: added tests for new functionality ([`8839d6e`](https://github.com/srv/git/chew/commit/8839d6ea9257b43b15d0c732d7326f39359539a1))
 
-* feat: added new combinator for repeating a parser
+* test: corrected tests to better reflect at_line functionality ([`433bc2d`](https://github.com/srv/git/chew/commit/433bc2dc00c8f7dfdd4b55322e64e25484877678))
 
-* refactor: fixed multi code to be more idiomatic
+* test: added test for using take on exhausted iterator ([`2aacffb`](https://github.com/srv/git/chew/commit/2aacffb8906808736c5c435bd7815f0c85f1fced))
 
-* feat: added more multi parsers
 
-* feat: added new function to parse state for current status
+## v2.0.1 (2023-09-20)
 
-* feat: added more general purpose parser combinators
+### Chore
 
-* refactor: changed to slice-based parsing
+* chore: modified project definition to include typedefs ([`19c5842`](https://github.com/srv/git/chew/commit/19c58429469b98b985b608a03dd90156e51ec522))
 
-* refactor: added generic annotations to sequence fns
 
-* refactor: added better typing to multi module
+## v2.0.0 (2023-09-20)
 
-* refactor: added better generic typing
+### Breaking
 
-* refactor: added better typing to primitives
+* refactor!: refined ErrorKind variants and impl changes ([`10d8ca3`](https://github.com/srv/git/chew/commit/10d8ca37d59cad7ac415ace2c75b46697df3fc43))
 
-* feat: continued typing improvements
+* refactor!: changed is_a and is_not to fail on no match ([`380b1ca`](https://github.com/srv/git/chew/commit/380b1cad1ae73b05ede0ccbde81f463d0c1488bf))
 
-* fix: fixed issue with sequence searching
+* refactor!: added ErrorKind(s) to Error values ([`053d5f3`](https://github.com/srv/git/chew/commit/053d5f353e45227d579b4ba39b38eb9138aa28e1))
 
-* build: added makefile target for unit tests
+* refactor!: changed names of core types ([`ec8e72e`](https://github.com/srv/git/chew/commit/ec8e72e8150a036189f510674df134f533595cb9))
 
-* fix: fixed behavior of generic function to match nom api
+### Feature
 
-* fix: fixed behavior of take_while
+* feat: added function for ignoring an ErrorKind to error module ([`b36b09f`](https://github.com/srv/git/chew/commit/b36b09fc5b9d8b4be4489b9e7af2944c6bb777a1))
 
-* test: added tests for generic functionality
+* feat: added the ability to chain errors with origins ([`d819486`](https://github.com/srv/git/chew/commit/d81948675d6013b8de8de22ec74ed3e03929b4bc))
 
-* fix: fixed bug in count implementation
+### Fix
 
-* refactor: renamed character module to char
+* fix: fixed Exception type detection ([`7008a8c`](https://github.com/srv/git/chew/commit/7008a8c6fe351b4241fd2149e0835329ea092874))
 
-* fix: fixed type annotations in char functions
+* fix: fixed Exception type detection ([`318c407`](https://github.com/srv/git/chew/commit/318c40744eec8123e5716cbff5b3a7608ceeb287))
 
-* test: added initial tests for chew functionality
+### Refactor
 
-* fix: fixed behavior of uint parser
+* refactor: changed naming scheme of variable in tag ([`e68c487`](https://github.com/srv/git/chew/commit/e68c48722d10ca5d80590b456c10669c05a3d39a))
 
-* test: finished adding tests for the multi module
+* refactor: changed `map_res` error return semantics ([`4872961`](https://github.com/srv/git/chew/commit/48729615391e4750474768e8f97eaf4952b1974e))
 
-* refactor: made uint and iint into their own parsers
 
-* refactor: converted fns to proper parsers
+## v1.0.0 (2023-09-20)
 
-* refactor: made ParseResult a more lightweight type alias
 
-    We don&#39;t need a dataclass to represent a ParseResult; we can instead
-    represent it as a lightweight immutable tuple type.
+## v0.1.0 (2023-09-04)
 
-* refactor: rearranged types and corrects docs
-
-* refactor: rewrote sequence module to use types module
-
-* refactor: rewrote multi to use types module more
-
-* refactor: rewrite generic module to use types module
-
-* refactor: changed comb module to use type module
-
-* refactor: improved typing in branch
-
-* test: updated test semantics to match new parse types
-
-* fix: fixed issues with state updates in multiple parsing
-
-* refactor: change multiple sequence fn to return a tuple
-
-* refactor: fixed naming of preceded
-
-* test: added unit tests for the sequence module
-
-* test: added unit tests for the branch module
-
-* feat: updated combinator functions to reach nom-parity
-
-* fix: fixed eof return value
-
-* fix: fixed negate to actually return a ParseError
-
-* fix: fixed issue with rest raising error
-
-* test: added unit test for combinators
-
-* refactor: removed impossible branch
-
-* refactor: removed unexecuted branch from recognize
-
-* refactor: removed impossible branch from comb module
-
-* refactor: removed unused branches from multi
-
-* refactor: moved sequence primitives into their own module
-
-* refactor: removed non-existent exception catch
-
-* test: added tests for combinator module
-
-* build: added code coverage command runner to Makefile
-
-* build: added targets for cleaning directory to Makefile
-
-* refactor: changed naming convention for parser arguments
-
-* fix: fixed bug introduced by refactoring in tag
-
-* feat: added new primitive function for line number
-
-* build: changed from PDM to Poetry build backend
-
-* build: added development dependencies to pyproject
-
-* build: fixed errors in command runner
-
-* refactor: moved error type into its own module
-
-* test: updated tests with module changes
-
-* refactor: added explicit exports to prevent name conflicts
-
-    Added exports to prevent named generic type conflict on star
-    imports.
-
-* test: replaced explicit imports with star imports
-
-* test: rewrote tests to remote unused imports
-
-* test: fixed error introduced in test refactoring
-
-* build: added typing definition marker to package
-
-* feat: added new module `literal` for parsing python-like literals
-
-* refactor: changed multi module to repeat
-
-* refactor: renamed `primitives` module to `primitive`
-
-* refactor: renamed `comb` module to `combine`
-
-* refactor: renamed `char` module to `string`
-
-* refactor: replaced custom string constants with stdlib
-
-* build: added distribution folder to distclean ([`38e25f8`](https://github.com/srv/git/chew/commit/38e25f8fd3126065e633a28d46b6e92fe66be8b8))
+### Chore
 
 * chore: initial commit ([`a65bbd9`](https://github.com/srv/git/chew/commit/a65bbd939393361c532f4d2dca5b73df2ec089a9))
