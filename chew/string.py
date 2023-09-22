@@ -90,7 +90,8 @@ def satisfy(cond: Matcher) -> StringParser:
 
     def _satisfy(sequence: str) -> Result:
         taker: Parser[str, str] = take(1)
-        (current, item) = taker(sequence)
+        with map_kind(ErrorKind.SATISFY):
+            (current, item) = taker(sequence)
         if cond(item):
             return (current, item)
         raise Error(current, ErrorKind.SATISFY)
