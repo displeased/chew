@@ -71,7 +71,8 @@ def char(character: str) -> StringParser:
 
     def _char(sequence: str) -> Result[str, str]:
         taker: Parser[str, str] = take(1)
-        result = taker(sequence)
+        with map_kind(ErrorKind.CHAR):
+            result = taker(sequence)
         (_, nchar) = result
 
         if nchar != character:
