@@ -6,6 +6,7 @@ __all__ = [
     "take_till",
     "take_till1",
     "take_until",
+    "take_until1",
     "take_while",
     "tag",
     "is_a",
@@ -134,6 +135,13 @@ def take_until(to_match: S) -> Parser[S, S]:
         return result
 
     return _take_until
+
+
+def take_until1(to_match: S) -> Parser[S, S]:
+    """
+    Returns the non-empty input slice up to the first occurrence of the pattern.
+    """
+    return _min_one(take_until(to_match), ErrorKind.TAKE_UNTIL)
 
 
 def take_while(cond: Matcher) -> Parser[S, S]:

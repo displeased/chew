@@ -85,8 +85,31 @@ class TestGeneric(unittest.TestCase):
             take_until("eof")("")
         self.assertEqual(context.exception, Error("", ErrorKind.TAKE_UNTIL))
 
-    def test_take_until_one_match(self):
+    def test_take_until_on_one_match(self):
         self.assertEqual(take_until("eof")("1eof2eof"), ("eof2eof", "1"))
+
+    def test_take_until1(self):
+        self.assertEqual(take_until1("eof")("hello, worldeof"), ("eof", "hello, world"))
+
+    def test_take_until1_no_match(self):
+        with self.assertRaises(Error) as context:
+            take_until1("eof")("hello, world")
+        self.assertEqual(
+            context.exception, Error("hello, world", ErrorKind.TAKE_UNTIL)
+        )
+
+    def test_take_until1_on_exhausted(self):
+        with self.assertRaises(Error) as context:
+            take_until1("eof")("")
+        self.assertEqual(context.exception, Error("", ErrorKind.TAKE_UNTIL))
+
+    def test_take_until1_on_one_match(self):
+        self.assertEqual(take_until1("eof")("1eof2eof"), ("eof2eof", "1"))
+
+    def test_take_until1_empty_result(self):
+        with self.assertRaises(Error) as context:
+            take_until1("eof")("eof")
+        self.assertEqual(context.exception, Error("eof", ErrorKind.TAKE_UNTIL))
 
     def test_take_while(self):
         self.assertEqual(
