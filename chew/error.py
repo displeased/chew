@@ -3,7 +3,6 @@ Error handling facilities.
 """
 # pylint: disable=raise-missing-from
 from __future__ import annotations
-from typing import Optional
 import enum
 import contextlib
 import dataclasses
