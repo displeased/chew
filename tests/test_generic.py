@@ -53,6 +53,26 @@ class TestGeneric(unittest.TestCase):
     def test_take_till_on_exhausted(self):
         self.assertEqual(take_till(lambda c: c == ":")(""), ("", ""))
 
+    def test_take_till1(self):
+        self.assertEqual(take_till1(lambda c: c == ":")("latin:123"), (":123", "latin"))
+
+    def test_take_till1_on_first_match(self):
+        with self.assertRaises(Error) as context:
+            take_till1(lambda c: c == ":")(":empty matched")
+
+        self.assertEqual(
+            context.exception, Error(":empty matched", ErrorKind.TAKE_TILL)
+        )
+
+    def test_take_till1_on_no_match(self):
+        self.assertEqual(take_till1(lambda c: c == ":")("12345"), ("", "12345"))
+
+    def test_take_till1_on_exhausted(self):
+        with self.assertRaises(Error) as context:
+            take_till1(lambda c: c == ":")("")
+
+        self.assertEqual(context.exception, Error("", ErrorKind.TAKE_TILL))
+
     def test_take_while(self):
         self.assertEqual(
             take_while(lambda c: c in stdstring.ascii_letters)("latin123"),

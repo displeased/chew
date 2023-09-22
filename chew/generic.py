@@ -1,7 +1,7 @@
 """
 Generic parser generators.
 """
-__all__ = ["take", "take_till", "take_while", "tag", "is_a", "is_not"]
+__all__ = ["take", "take_till", "take_till1", "take_while", "tag", "is_a", "is_not"]
 from typing import TypeVar, Sized
 from chew.error import Error, ErrorKind, map_kind
 from chew.types import Parser, Matcher, Result, S
@@ -82,6 +82,13 @@ def take_till(cond: Matcher) -> Parser[S, S]:
         return taker(sequence)
 
     return _take_till
+
+
+def take_till1(cond: Matcher) -> Parser[S, S]:
+    """
+    Returns the longest (minimum of 1) input slice until the condition is true.
+    """
+    return _min_one(take_till(cond), ErrorKind.TAKE_TILL)
 
 
 def take_while(cond: Matcher) -> Parser[S, S]:
