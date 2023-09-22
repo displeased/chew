@@ -2,7 +2,7 @@
 Generic parser generators.
 """
 __all__ = ["take", "take_till", "take_while", "tag", "is_a", "is_not"]
-from chew.error import Error, ErrorKind
+from chew.error import Error, ErrorKind, map_kind
 from chew.types import Parser, Matcher, Result, S
 from chew.primitive import take as ptake, next_item, peek, eof
 
@@ -83,7 +83,8 @@ def tag(to_match: S) -> Parser[S, S]:
 
     def _tag(sequence: S) -> Result[S, S]:
         taker: Parser[S, S] = take(len(to_match))
-        (current, next_items) = taker(sequence)
+        with map_kind(ErrorKind.TAG):
+            (current, next_items) = taker(sequence)
 
         for expected, existing in zip(to_match, next_items):
             if existing != expected:
