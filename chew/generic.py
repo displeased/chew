@@ -1,7 +1,16 @@
 """
 Generic parser generators.
 """
-__all__ = ["take", "take_till", "take_till1", "take_while", "tag", "is_a", "is_not"]
+__all__ = [
+    "take",
+    "take_till",
+    "take_till1",
+    "take_until",
+    "take_while",
+    "tag",
+    "is_a",
+    "is_not",
+]
 from typing import TypeVar, Sized
 from chew.error import Error, ErrorKind, map_kind
 from chew.types import Parser, Matcher, Result, S
@@ -89,6 +98,42 @@ def take_till1(cond: Matcher) -> Parser[S, S]:
     Returns the longest (minimum of 1) input slice until the condition is true.
     """
     return _min_one(take_till(cond), ErrorKind.TAKE_TILL)
+
+
+def take_until(to_match: S) -> Parser[S, S]:
+    """
+    Returns the input slice up to the first occurrence of the pattern.
+    """
+
+    def _take_until(sequence: S) -> Result[S, S]:
+        if eof(sequence):
+            raise Error(sequence, ErrorKind.TAKE_UNTIL)
+
+        longest = 0
+        current: S = sequence[longest:]  # type: ignore
+        exhausted = True
+
+        while not eof(current):
+            try:
+                tag(to_match)(current)
+                exhausted = False
+                break
+            except Error:
+                pass
+            longest += 1
+            current: S = sequence[longest:]  # type: ignore
+
+        if exhausted:
+            raise Error(sequence, ErrorKind.TAKE_UNTIL)
+
+        # SAFETY: cannot be None if we made sure that we didn't exhaust the
+        # input, which we check above
+        result = ptake(sequence, longest)
+        assert result is not None
+
+        return result
+
+    return _take_until
 
 
 def take_while(cond: Matcher) -> Parser[S, S]:

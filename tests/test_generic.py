@@ -70,8 +70,23 @@ class TestGeneric(unittest.TestCase):
     def test_take_till1_on_exhausted(self):
         with self.assertRaises(Error) as context:
             take_till1(lambda c: c == ":")("")
-
         self.assertEqual(context.exception, Error("", ErrorKind.TAKE_TILL))
+
+    def test_take_until(self):
+        self.assertEqual(take_until("eof")("hello, worldeof"), ("eof", "hello, world"))
+
+    def test_take_until_no_match(self):
+        with self.assertRaises(Error) as context:
+            take_until("eof")("hello, world")
+        self.assertEqual(context.exception, Error("hello, world", ErrorKind.TAKE_UNTIL))
+
+    def test_take_until_on_exhausted(self):
+        with self.assertRaises(Error) as context:
+            take_until("eof")("")
+        self.assertEqual(context.exception, Error("", ErrorKind.TAKE_UNTIL))
+
+    def test_take_until_one_match(self):
+        self.assertEqual(take_until("eof")("1eof2eof"), ("eof2eof", "1"))
 
     def test_take_while(self):
         self.assertEqual(
