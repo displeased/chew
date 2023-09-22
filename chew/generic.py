@@ -87,7 +87,7 @@ def tag(to_match: S) -> Parser[S, S]:
 
         for expected, existing in zip(to_match, next_items):
             if existing != expected:
-                raise Error(current, ErrorKind.TAG)
+                raise Error(sequence, ErrorKind.TAG)
 
         return (current, to_match)
 
