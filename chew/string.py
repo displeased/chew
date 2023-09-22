@@ -28,41 +28,17 @@ __all__ = [
     "tab",
     "tag_no_case",
 ]
-from typing import Sequence, TypeVar, Sized
+from typing import Sequence
 import string as stdstring
 from chew.types import (
     StringParser,
     Result,
     Matcher,
     Parser,
-    S,
 )
 from chew.error import Error, ErrorKind, map_kind, ignore_kind
 from chew.branch import alt
-from chew.generic import tag, is_a, take, take_while
-
-# Sized Yielded Element
-#
-# Yielded value from a parser that has a size.
-I = TypeVar("I", bound=Sized)
-
-
-def _min_one(wrapped: Parser[S, I], error: ErrorKind) -> Parser[S, I]:
-    """
-    Wraps the provided parser and raises an exception with the given kind if the
-    returned Parser result does not have at least one element.
-    """
-
-    def __min_one(sequence: S) -> Result[S, I]:
-        result = wrapped(sequence)
-        (_, match) = result
-
-        if len(match) == 0:
-            raise Error(sequence, error)
-
-        return result
-
-    return __min_one
+from chew.generic import tag, is_a, take, take_while, _min_one
 
 
 def tag_no_case(to_match: str) -> StringParser:

@@ -2,9 +2,33 @@
 Generic parser generators.
 """
 __all__ = ["take", "take_till", "take_while", "tag", "is_a", "is_not"]
+from typing import TypeVar, Sized
 from chew.error import Error, ErrorKind, map_kind
 from chew.types import Parser, Matcher, Result, S
 from chew.primitive import take as ptake, next_item, peek, eof
+
+# Sized Yielded Element
+#
+# Yielded value from a parser that has a size.
+I = TypeVar("I", bound=Sized)
+
+
+def _min_one(wrapped: Parser[S, I], error: ErrorKind) -> Parser[S, I]:
+    """
+    Wraps the provided parser and raises an exception with the given kind if the
+    returned Parser result does not have at least one element.
+    """
+
+    def __min_one(sequence: S) -> Result[S, I]:
+        result = wrapped(sequence)
+        (_, match) = result
+
+        if len(match) == 0:
+            raise Error(sequence, error)
+
+        return result
+
+    return __min_one
 
 
 def take(count: int) -> Parser[S, S]:
