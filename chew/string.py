@@ -94,7 +94,7 @@ def satisfy(cond: Matcher) -> StringParser:
             (current, item) = taker(sequence)
         if cond(item):
             return (current, item)
-        raise Error(current, ErrorKind.SATISFY)
+        raise Error(sequence, ErrorKind.SATISFY)
 
     return _satisfy
 
