@@ -94,9 +94,7 @@ class TestGeneric(unittest.TestCase):
     def test_take_until1_no_match(self):
         with self.assertRaises(Error) as context:
             take_until1("eof")("hello, world")
-        self.assertEqual(
-            context.exception, Error("hello, world", ErrorKind.TAKE_UNTIL)
-        )
+        self.assertEqual(context.exception, Error("hello, world", ErrorKind.TAKE_UNTIL))
 
     def test_take_until1_on_exhausted(self):
         with self.assertRaises(Error) as context:
@@ -131,6 +129,28 @@ class TestGeneric(unittest.TestCase):
         self.assertEqual(
             take_while(lambda c: c in stdstring.ascii_letters)(""), ("", "")
         )
+
+    def test_take_while1(self):
+        self.assertEqual(
+            take_while1(lambda c: c in stdstring.ascii_letters)("latin123"),
+            ("123", "latin"),
+        )
+
+    def test_take_while1_all_match(self):
+        self.assertEqual(
+            take_while1(lambda c: c in stdstring.ascii_letters)("latin"), ("", "latin")
+        )
+
+    def test_take_while1_some_match(self):
+        self.assertEqual(
+            take_while1(lambda c: c in stdstring.ascii_letters)("latin123"),
+            ("123", "latin"),
+        )
+
+    def test_take_while1_no_match(self):
+        with self.assertRaises(Error) as context:
+            take_while1(lambda c: c in stdstring.ascii_letters)("12345")
+        self.assertEqual(context.exception, Error("12345", ErrorKind.TAKE_WHILE))
 
     def test_is_a(self):
         self.assertEqual(

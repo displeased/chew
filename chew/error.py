@@ -39,6 +39,7 @@ class ErrorKind(enum.Enum):
     ONE_OF = 22
     TAKE_TILL = 23
     TAKE_UNTIL = 24
+    TAKE_WHILE = 25
 
 
 @dataclasses.dataclass

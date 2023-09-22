@@ -8,6 +8,7 @@ __all__ = [
     "take_until",
     "take_until1",
     "take_while",
+    "take_while1",
     "tag",
     "is_a",
     "is_not",
@@ -146,7 +147,7 @@ def take_until1(to_match: S) -> Parser[S, S]:
 
 def take_while(cond: Matcher) -> Parser[S, S]:
     """
-    Take from the state while the condition is true.
+    Returns the longest input slice that matches the condition.
     """
 
     def _take_while(sequence: S) -> Result:
@@ -158,6 +159,13 @@ def take_while(cond: Matcher) -> Parser[S, S]:
         return taker(sequence)
 
     return _take_while
+
+
+def take_while1(cond: Matcher) -> Parser[S, S]:
+    """
+    Returns the longest (at least 1) input slice that matches the condition.
+    """
+    return _min_one(take_while(cond), ErrorKind.TAKE_WHILE)
 
 
 def tag(to_match: S) -> Parser[S, S]:
