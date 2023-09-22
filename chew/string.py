@@ -26,6 +26,7 @@ __all__ = [
     "space0",
     "space1",
     "tab",
+    "tag_no_case",
 ]
 from typing import Sequence, TypeVar, Sized
 import string as stdstring
@@ -62,6 +63,24 @@ def _min_one(wrapped: Parser[S, I], error: ErrorKind) -> Parser[S, I]:
         return result
 
     return __min_one
+
+
+def tag_no_case(to_match: str) -> StringParser:
+    """
+    Recognizes a Case-Insensitive Pattern.
+    """
+
+    def _tag_no_case(sequence: str) -> Result[str, str]:
+        taker: Parser[str, str] = take(len(to_match))
+        with map_kind(ErrorKind.TAG):
+            (current, raw_compare) = taker(sequence)
+
+        if to_match.lower() != raw_compare.lower():
+            raise Error(sequence, ErrorKind.TAG)
+
+        return (current, raw_compare)
+
+    return _tag_no_case
 
 
 def char(character: str) -> StringParser:

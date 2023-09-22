@@ -70,6 +70,25 @@ class TestChar(unittest.TestCase):
             char("a")("")
         self.assertEqual(context.exception, Error("", ErrorKind.CHAR))
 
+    def test_tag_no_case(self):
+        self.assertEqual(tag_no_case("hello")("Hello, World!"), (", World!", "Hello"))
+
+    def test_tag_no_case_matches_original(self):
+        self.assertEqual(tag_no_case("hello")("hello, World!"), (", World!", "hello"))
+
+    def test_tag_no_case_weird_capitalization(self):
+        self.assertEqual(tag_no_case("hello")("HeLlO, World!"), (", World!", "HeLlO"))
+
+    def test_tag_no_case_no_match(self):
+        with self.assertRaises(Error) as context:
+            tag_no_case("hello")("Something")
+        self.assertEqual(context.exception, Error("Something", ErrorKind.TAG))
+
+    def test_tag_no_case_on_exhausted(self):
+        with self.assertRaises(Error) as context:
+            tag_no_case("hello")("")
+        self.assertEqual(context.exception, Error("", ErrorKind.TAG))
+
     def test_crlf(self):
         self.assertEqual(crlf("\r\nc"), ("c", "\r\n"))
 
