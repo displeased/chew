@@ -36,6 +36,7 @@ class ErrorKind(enum.Enum):
     FAIL = 18
     FLOAT = 19
     INTEGER = 20
+    NONE_OF = 21
 
 
 @dataclasses.dataclass

@@ -111,7 +111,11 @@ def none_of(characters: Sequence[str]) -> StringParser:
     Recognizes a character that is not in the provided characters.
     """
 
-    return satisfy(lambda c: c not in characters)
+    def _none_of(sequence: str) -> Result[str, str]:
+        with map_kind(ErrorKind.NONE_OF):
+            return satisfy(lambda c: c not in characters)(sequence)
+
+    return _none_of
 
 
 def alpha0(sequence: str) -> Result[str, str]:
