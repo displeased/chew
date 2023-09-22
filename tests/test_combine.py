@@ -6,7 +6,7 @@ from chew.string import alpha1, digit1, char
 from chew.combine import *
 from chew.branch import alt
 from chew.generic import take, tag
-from chew.error import Error
+from chew.error import Error, ErrorKind
 from chew.literal import int_literal
 from chew.sequence import separated_pair
 
@@ -16,12 +16,16 @@ class TestCombine(unittest.TestCase):
         self.assertEqual(all_consuming(alpha1)("abcd"), ("", "abcd"))
 
     def test_all_consuming_most_match(self):
-        with self.assertRaises(Error):
+        with self.assertRaises(Error) as context:
             all_consuming(alpha1)("abcd;")
 
+        self.assertEqual(context.exception, Error(";", ErrorKind.EOF))
+
     def test_all_consuming_no_match(self):
-        with self.assertRaises(Error):
+        with self.assertRaises(Error) as context:
             all_consuming(alpha1)("123abcd;")
+
+        self.assertEqual(context.exception, Error("123abcd;", ErrorKind.ALPHA))
 
     def test_conditional(self):
         self.assertEqual(conditional(True, alpha1)("abcd;"), (";", "abcd"))
@@ -30,8 +34,10 @@ class TestCombine(unittest.TestCase):
         self.assertEqual(conditional(False, alpha1)("abcd;"), ("abcd;", None))
 
     def test_conditional_on_true_no_match(self):
-        with self.assertRaises(Error):
+        with self.assertRaises(Error) as context:
             conditional(True, alpha1)("123;")
+
+        self.assertEqual(context.exception, Error("123;", ErrorKind.ALPHA))
 
     def test_conditional_on_false_no_match(self):
         self.assertEqual(conditional(False, alpha1)("123;"), ("123;", None))
@@ -43,11 +49,13 @@ class TestCombine(unittest.TestCase):
         self.assertEqual(consumed_parser("abcd,efgh1"), ("1", ("abcd,efgh", True)))
 
     def test_consumed_on_err(self):
-        with self.assertRaises(Error):
+        with self.assertRaises(Error) as context:
             consumed_parser = consumed(
                 noerr_value(True, separated_pair(alpha1, char(","), alpha1))
             )
             consumed_parser("abcd;")
+
+        self.assertEqual(context.exception, Error(";", ErrorKind.CHAR))
 
     def test_consumed_recognized_parity_digits(self):
         def inner_parser(state):
@@ -68,22 +76,29 @@ class TestCombine(unittest.TestCase):
         self.assertEqual(recognize_parser("abcd"), consumed_parser("abcd"))
 
     def test_eof(self):
-        with self.assertRaises(Error):
+        with self.assertRaises(Error) as context:
             eof("abc")
+
+        self.assertEqual(context.exception, Error("abc", ErrorKind.EOF))
 
     def test_eof_on_empty(self):
         self.assertEqual(eof(""), ("", ""))
 
     def test_fail(self):
-        with self.assertRaises(Error):
-            fail("string")
+        strn = "string"
+        with self.assertRaises(Error) as context:
+            fail(strn)
+
+        self.assertEqual(context.exception, Error(strn, ErrorKind.FAIL))
 
     def test_flat_map(self):
         self.assertEqual(flat_map(int_literal, take)("2ab"), ("", "ab"))
 
     def test_flat_map_no_match(self):
-        with self.assertRaises(Error):
+        with self.assertRaises(Error) as context:
             flat_map(int_literal, take)("4ab")
+
+        self.assertEqual(context.exception, Error("ab", ErrorKind.EOF))
 
     def test_map_res(self):
         self.assertEqual(
@@ -92,8 +107,10 @@ class TestCombine(unittest.TestCase):
         )
 
     def test_map_res_no_match(self):
-        with self.assertRaises(Error):
+        with self.assertRaises(Error) as context:
             map_res(digit1, len)("abc")
+
+        self.assertEqual(context.exception, Error("abc", ErrorKind.DIGIT))
 
     def test_map_parser(self):
         self.assertEqual(map_parser(take(5), digit1)("12345"), ("", "12345"))
@@ -102,15 +119,19 @@ class TestCombine(unittest.TestCase):
         self.assertEqual(map_parser(take(5), digit1)("123ab"), ("", "123"))
 
     def test_map_parser_on_subfail(self):
-        with self.assertRaises(Error):
+        with self.assertRaises(Error) as context:
             map_parser(take(5), digit1)("123")
+
+        self.assertEqual(context.exception, Error("123", ErrorKind.EOF))
 
     def test_negate(self):
         self.assertEqual(negate(alpha1)("123"), ("123", None))
 
     def test_negate_on_match(self):
-        with self.assertRaises(Error):
+        with self.assertRaises(Error) as context:
             negate(alpha1)("abcd")
+
+        self.assertEqual(context.exception, Error("abcd", ErrorKind.NEGATE))
 
     def test_optional_on_success(self):
         self.assertEqual(optional(alpha1)("abcd;"), (";", "abcd"))
@@ -122,8 +143,10 @@ class TestCombine(unittest.TestCase):
         self.assertEqual(peek(alpha1)("abcd;"), ("abcd;", "abcd"))
 
     def test_peek_no_match(self):
-        with self.assertRaises(Error):
+        with self.assertRaises(Error) as context:
             peek(alpha1)("123;")
+
+        self.assertEqual(context.exception, Error("123;", ErrorKind.ALPHA))
 
     def test_recognize(self):
         self.assertEqual(
@@ -132,8 +155,10 @@ class TestCombine(unittest.TestCase):
         )
 
     def test_recognize_no_match(self):
-        with self.assertRaises(Error):
+        with self.assertRaises(Error) as context:
             recognize(separated_pair(alpha1, char(","), alpha1))("abcd;")
+
+        self.assertEqual(context.exception, Error(";", ErrorKind.CHAR))
 
     def test_rest(self):
         self.assertEqual(rest("abc"), ("", "abc"))
@@ -160,16 +185,22 @@ class TestCombine(unittest.TestCase):
         self.assertEqual(noerr_value(1234, alpha1)("abcd"), ("", 1234))
 
     def test_noerr_value_no_match(self):
-        with self.assertRaises(Error):
+        with self.assertRaises(Error) as context:
             noerr_value(1234, alpha1)("123abcd;")
+
+        self.assertEqual(context.exception, Error("123abcd;", ErrorKind.ALPHA))
 
     def test_verify(self):
         self.assertEqual(verify(alpha1, lambda v: len(v) == 4)("abcd"), ("", "abcd"))
 
     def test_verify_verifier_fail(self):
-        with self.assertRaises(Error):
+        with self.assertRaises(Error) as context:
             verify(alpha1, lambda v: len(v) == 4)("abcde")
 
+        self.assertEqual(context.exception, Error("abcde", ErrorKind.VERIFY))
+
     def test_verify_parser_fail(self):
-        with self.assertRaises(Error):
+        with self.assertRaises(Error) as context:
             verify(alpha1, lambda v: len(v) == 4)("123abcd;")
+
+        self.assertEqual(context.exception, Error("123abcd;", ErrorKind.ALPHA))

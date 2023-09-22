@@ -3,7 +3,7 @@ Test cases for the `sequence` module.
 """
 import unittest
 from chew.string import alpha1, digit1
-from chew.error import Error
+from chew.error import Error, ErrorKind
 from chew.generic import tag
 from chew.sequence import *
 
@@ -15,8 +15,10 @@ class TestSequence(unittest.TestCase):
         )
 
     def test_multiple_on_incomplete(self):
-        with self.assertRaises(Error):
+        with self.assertRaises(Error) as context:
             multiple([digit1, alpha1, digit1])("123def")
+
+        self.assertEqual(context.exception, Error("", ErrorKind.DIGIT))
 
     def test_delimited(self):
         self.assertEqual(
@@ -31,12 +33,16 @@ class TestSequence(unittest.TestCase):
         )
 
     def test_delimited_on_exhausted(self):
-        with self.assertRaises(Error):
+        with self.assertRaises(Error) as context:
             delimited(tag("("), tag("abc"), tag(")"))("")
 
+        self.assertEqual(context.exception, Error("", ErrorKind.TAG))
+
     def test_delimited_on_no_match(self):
-        with self.assertRaises(Error):
+        with self.assertRaises(Error) as context:
             delimited(tag("("), tag("abc"), tag(")"))("123")
+
+        self.assertEqual(context.exception, Error("123", ErrorKind.TAG))
 
     def test_pair(self):
         self.assertEqual(pair(tag("abc"), tag("efg"))("abcefg"), ("", ("abc", "efg")))
@@ -47,12 +53,16 @@ class TestSequence(unittest.TestCase):
         )
 
     def test_pair_on_exhausted(self):
-        with self.assertRaises(Error):
+        with self.assertRaises(Error) as context:
             pair(tag("abc"), tag("efg"))("")
 
+        self.assertEqual(context.exception, Error("", ErrorKind.TAG))
+
     def test_pair_on_no_match(self):
-        with self.assertRaises(Error):
+        with self.assertRaises(Error) as context:
             pair(tag("abc"), tag("efg"))("123")
+
+        self.assertEqual(context.exception, Error("123", ErrorKind.TAG))
 
     def test_preceded(self):
         self.assertEqual(preceded(tag("abc"), tag("efg"))("abcefg"), ("", "efg"))
@@ -61,12 +71,16 @@ class TestSequence(unittest.TestCase):
         self.assertEqual(preceded(tag("abc"), tag("efg"))("abcefghij"), ("hij", "efg"))
 
     def test_preceded_on_exhausted(self):
-        with self.assertRaises(Error):
+        with self.assertRaises(Error) as context:
             preceded(tag("abc"), tag("efg"))("")
 
+        self.assertEqual(context.exception, Error("", ErrorKind.TAG))
+
     def test_preceded_on_no_match(self):
-        with self.assertRaises(Error):
+        with self.assertRaises(Error) as context:
             preceded(tag("abc"), tag("efg"))("123")
+
+        self.assertEqual(context.exception, Error("123", ErrorKind.TAG))
 
     def test_separated_pair(self):
         self.assertEqual(
@@ -81,12 +95,16 @@ class TestSequence(unittest.TestCase):
         )
 
     def test_separated_pair_on_exhausted(self):
-        with self.assertRaises(Error):
+        with self.assertRaises(Error) as context:
             separated_pair(tag("abc"), tag("|"), tag("efg"))("")
 
+        self.assertEqual(context.exception, Error("", ErrorKind.TAG))
+
     def test_separated_pair_on_no_match(self):
-        with self.assertRaises(Error):
+        with self.assertRaises(Error) as context:
             separated_pair(tag("abc"), tag("|"), tag("efg"))("123")
+
+        self.assertEqual(context.exception, Error("123", ErrorKind.TAG))
 
     def test_terminated(self):
         self.assertEqual(terminated(tag("abc"), tag("efg"))("abcefg"), ("", "abc"))
@@ -97,9 +115,13 @@ class TestSequence(unittest.TestCase):
         )
 
     def test_terminated_on_exhausted(self):
-        with self.assertRaises(Error):
+        with self.assertRaises(Error) as context:
             terminated(tag("abc"), tag("efg"))("")
 
+        self.assertEqual(context.exception, Error("", ErrorKind.TAG))
+
     def test_terminated_on_no_match(self):
-        with self.assertRaises(Error):
+        with self.assertRaises(Error) as context:
             terminated(tag("abc"), tag("efg"))("123")
+
+        self.assertEqual(context.exception, Error("123", ErrorKind.TAG))
