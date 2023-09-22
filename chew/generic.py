@@ -187,30 +187,17 @@ def tag(to_match: S) -> Parser[S, S]:
     return _tag
 
 
-def _takes_some(matcher: Matcher, error_kind: ErrorKind) -> Parser[S, S]:
-    """
-    Fails if the sequence produced by with `matcher` is empty with `error_kind`.
-    """
-
-    def __takes_some(sequence: S) -> Result[S, S]:
-        taker: Parser[S, S] = take_while(matcher)
-        result = taker(sequence)
-
-        (_, value) = result
-        if len(value) == 0:
-            raise Error(sequence, error_kind)
-
-        return result
-
-    return __takes_some
-
-
 def is_a(items: S) -> Parser[S, S]:
     """
     Returns the longest slice whose elements are in the sequence of items.
     """
 
-    return _takes_some(lambda el: el in items, ErrorKind.IS_A)
+    def _is_a(sequence: S) -> Result[S, S]:
+        with map_kind(ErrorKind.IS_A):
+            taker: Parser[S, S] = take_while1(lambda el: el in items)
+            return taker(sequence)
+
+    return _is_a
 
 
 def is_not(items: S) -> Parser[S, S]:
@@ -219,4 +206,9 @@ def is_not(items: S) -> Parser[S, S]:
     items.
     """
 
-    return _takes_some(lambda el: el not in items, ErrorKind.IS_NOT)
+    def _is_not(sequence: S) -> Result[S, S]:
+        with map_kind(ErrorKind.IS_NOT):
+            taker: Parser[S, S] = take_while1(lambda el: el not in items)
+            return taker(sequence)
+
+    return _is_not
