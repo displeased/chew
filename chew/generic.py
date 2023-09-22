@@ -15,15 +15,11 @@ def take(count: int) -> Parser[S, S]:
     """
 
     def _take(sequence: S) -> Result[S, S]:
-        if len(sequence) < count:
+        divided = ptake(sequence, count)
+        if divided is None:
             raise Error(sequence, ErrorKind.EOF)
 
-        # SAFETY: result should never be None when the above precondition is
-        # checked
-        result = ptake(sequence, count)
-        assert result is not None
-
-        return result
+        return divided
 
     return _take
 
