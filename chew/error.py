@@ -46,7 +46,6 @@ class Error(Exception):
 
     remaining: Parseable
     kind: ErrorKind
-    origin: Optional[Exception] = None
 
     def as_int(self) -> int:
         """Gets the kind as an int."""
@@ -56,7 +55,7 @@ class Error(Exception):
         """
         Create a new Error with the same values but a different ErrorKind.
         """
-        return Error(self.remaining, kind, origin=self)
+        return Error(self.remaining, kind)
 
 
 @contextlib.contextmanager
@@ -67,7 +66,7 @@ def map_kind(kind: ErrorKind):
     try:
         yield None
     except Error as error:
-        raise error.map_kind(kind)
+        raise error.map_kind(kind) from error
 
 
 @contextlib.contextmanager
@@ -79,7 +78,7 @@ def map_exception(etype: type[Exception], remaining: Parseable, kind: ErrorKind)
         yield None
     except Exception as exception:
         if issubclass(etype, type(exception)) or isinstance(exception, etype):
-            raise Error(remaining, kind, origin=exception)
+            raise Error(remaining, kind)
         raise exception
 
 
