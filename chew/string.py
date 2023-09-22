@@ -103,7 +103,11 @@ def one_of(characters: Sequence[str]) -> StringParser:
     Recognizes one of the provided characters.
     """
 
-    return satisfy(lambda c: c in characters)
+    def _one_of(sequence: str) -> Result[str, str]:
+        with map_kind(ErrorKind.ONE_OF):
+            return satisfy(lambda c: c in characters)(sequence)
+
+    return _one_of
 
 
 def none_of(characters: Sequence[str]) -> StringParser:
