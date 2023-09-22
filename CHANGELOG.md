@@ -2,7 +2,65 @@
 
 
 
-## v2.1.0 (2023-09-21)
+## v3.0.0 (2023-09-22)
+
+### Breaking
+
+* refactor!: removed manual origin holding from Error
+
+Removed the ability for an Error to contain its origin in favor of using
+Python&#39;s builtin Exception tracing ability. ([`7c80dde`](https://github.com/srv/git/chew/commit/7c80ddef80e7410ee7f676640c1e50e0739ff703))
+
+### Fix
+
+* fix: fixed bug in satisfy return value
+
+Fixed issue where satisfy would return the post-operated on sequence
+instead of the original un-modified sequence. ([`9e0fde4`](https://github.com/srv/git/chew/commit/9e0fde4ba06eafd79017b67333390a707240c7f4))
+
+* fix: fixed satisfy to return the correct type ([`c9733d7`](https://github.com/srv/git/chew/commit/c9733d7afbcbc0a7e7bd610dcd47d4cc48e0bac2))
+
+* fix: fixed return error kind of char function
+
+Fixed the return value of `char` to be `ErrorKind.CHAR` in all cases. ([`e434e61`](https://github.com/srv/git/chew/commit/e434e61e6de4e0b79d7661d7a4a69b2aa0f1fe03))
+
+* fix: fixed tag&#39;s error kind on an exhausted sequence
+
+Fixed the tag function&#39;s return ErrorKind such that it always fails with
+an ErrorKind.TAG. ([`84d4a76`](https://github.com/srv/git/chew/commit/84d4a76d0ee5452d95bf5b9597ddeb9710d20e7d))
+
+* fix: fixed return error kind of literal functions
+
+Fixed the return ErrorKind of the literal functions to match the
+expected value. ([`cfb3d0a`](https://github.com/srv/git/chew/commit/cfb3d0ac4582615dec405c6f05286310ca1e110a))
+
+* fix: fixed yielded remaining value of tag
+
+Fixed issue where tag would yield the incoming sequence post-comparison
+instead of the expected behavior of yielding the rest of the input that
+failed to match. ([`ea0f37b`](https://github.com/srv/git/chew/commit/ea0f37b3294f80a5878b9f8590467aaf08baad8c))
+
+### Refactor
+
+* refactor: added a new error kind for the one_of fn ([`41ef3b4`](https://github.com/srv/git/chew/commit/41ef3b4a09b7e971f61ec9dea2d39de54960f6a8))
+
+* refactor: added specific error kind for string.none_of
+
+Added a new ErrorKind for string.none_of. ([`88c89f6`](https://github.com/srv/git/chew/commit/88c89f6020459273bb6dea563ab04b5f51077c95))
+
+* refactor: modified generic.take to use safer interface
+
+Modified `generic.take` to rely on its call to the underlying primitive
+`take` when deciding whether or not it can actually take new elements. ([`91237c5`](https://github.com/srv/git/chew/commit/91237c589a399c0f7545d26d7073081ebc170e1c))
+
+### Test
+
+* test: added more comprehensive error tests
+
+Added comprehensive tests for raised exceptions. ([`56ccf05`](https://github.com/srv/git/chew/commit/56ccf056370c2d0875910dbfb62bf2b176ec519b))
+
+
+## v2.1.0 (2023-09-22)
 
 ### Build
 
