@@ -3,7 +3,7 @@ Combinators applying their child parser multiple times.
 """
 __all__ = ["count", "fill", "length_count", "length_data", "length_value"]
 # pylint: disable=invalid-name
-from typing import Sequence, TypeVar
+from typing import MutableSequence, Sequence, TypeVar
 from chew.types import Parser, Result, S
 from chew.generic import take
 
@@ -31,7 +31,7 @@ def count(parser: Parser[S, Y], times: int) -> Parser[S, Sequence[Y]]:
     return _count
 
 
-def fill(parser: Parser[S, Y], buffer: list[Y]) -> Parser[S, None]:
+def fill(parser: Parser[S, Y], buffer: MutableSequence[Y]) -> Parser[S, None]:
     """
     Fill the given buffer with the results of running the parser.
     """
