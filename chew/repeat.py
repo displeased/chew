@@ -1,12 +1,20 @@
 """
 Combinators applying their child parser multiple times.
 """
-__all__ = ["count", "fill", "fold_many0", "length_count", "length_data", "length_value"]
+__all__ = [
+    "count",
+    "fill",
+    "fold_many0",
+    "fold_many1",
+    "length_count",
+    "length_data",
+    "length_value",
+]
 # pylint: disable=invalid-name
 from typing import MutableSequence, Callable, Sequence, TypeVar
 from chew.types import Parser, Result, S
-from chew.error import Error
-from chew.generic import take
+from chew.error import Error, ErrorKind
+from chew.generic import take, _min_one, I
 from chew.primitive import eof
 
 # Generic Yielded Element
@@ -84,6 +92,21 @@ def fold_many0(
         return (current, accumulator)
 
     return _fold_many0
+
+
+def fold_many1(
+    parser: Parser[S, Y], constructor: Callable[[], I], gather: Callable[[I, Y], I]
+):
+    """
+    Repeats the parser, calling `gather` to gather the results.
+
+    Constructs an accumulator A using the passed constructor `constr`. For each
+    yielded element, calls `gather` to modify the accumulator.
+
+    Returns on an exhausted sequence to prevent an infinite loop with parsers
+    that accept empty inputs.
+    """
+    return _min_one(fold_many0(parser, constructor, gather), ErrorKind.MANY1)
 
 
 def length_count(

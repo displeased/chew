@@ -112,6 +112,42 @@ class TestRepeat(unittest.TestCase):
             ("", ["abc", "abc"]),
         )
 
+    def test_fold_many1(self):
+        def list_append(acc, item):
+            acc.append(item)
+            return acc
+
+        parser = fold_many1(tag("abc"), list, list_append)
+        self.assertEqual(parser("abcabc"), ("", ["abc", "abc"]))
+
+    def test_fold_many1_partial(self):
+        def list_append(acc, item):
+            acc.append(item)
+            return acc
+
+        parser = fold_many1(tag("abc"), list, list_append)
+        self.assertEqual(parser("abc123"), ("123", ["abc"]))
+
+    def test_fold_many1_no_match(self):
+        def list_append(acc, item):
+            acc.append(item)
+            return acc
+
+        parser = fold_many1(tag("abc"), list, list_append)
+        with self.assertRaises(Error) as context:
+            parser("123123")
+        self.assertEqual(context.exception, Error("123123", ErrorKind.MANY1))
+
+    def test_fold_many1_on_exhausted(self):
+        def list_append(acc, item):
+            acc.append(item)
+            return acc
+
+        parser = fold_many1(tag("abc"), list, list_append)
+        with self.assertRaises(Error) as context:
+            parser("")
+        self.assertEqual(context.exception, Error("", ErrorKind.MANY1))
+
     def test_length_count_on_sub_failure(self):
         with self.assertRaises(Error) as context:
             length_count(int_literal, tag("abc"))("3defdefdef")
