@@ -41,6 +41,13 @@ from chew.branch import alt
 from chew.generic import tag, is_a, take, take_while, _min_one
 
 
+def is_alphabetic(character: str) -> bool:
+    """
+    Returns True if the given character is an ASCII letter.
+    """
+    return character in stdstring.ascii_letters
+
+
 def tag_no_case(to_match: str) -> StringParser:
     """
     Recognizes a Case-Insensitive Pattern.
@@ -123,7 +130,7 @@ def alpha0(sequence: str) -> Result[str, str]:
     Recognizes zero or more uppercase alphabetic characters.
     """
     with ignore_kind(ErrorKind.IS_A):
-        return is_a(stdstring.ascii_letters)(sequence)
+        return take_while(is_alphabetic)(sequence)
     return (sequence, "")
 
 
