@@ -145,6 +145,34 @@ class TestGeneric(unittest.TestCase):
             take_while1(is_alphabetic)("12345")
         self.assertEqual(context.exception, Error("12345", ErrorKind.TAKE_WHILE))
 
+    def test_take_while_bounded(self):
+        short_alpha = take_while_bounded(3, 6, is_alphabetic)
+        self.assertEqual(short_alpha("latin123"), ("123", "latin"))
+
+    def test_take_while_bounded_over_max(self):
+        short_alpha = take_while_bounded(3, 6, is_alphabetic)
+        self.assertEqual(short_alpha("lengthy"), ("y", "length"))
+
+    def test_take_while_bounded_under_max(self):
+        short_alpha = take_while_bounded(3, 6, is_alphabetic)
+        self.assertEqual(short_alpha("latin"), ("", "latin"))
+
+    def test_take_while_bounded_too_short(self):
+        short_alpha = take_while_bounded(3, 6, is_alphabetic)
+        with self.assertRaises(Error) as context:
+            short_alpha("ed")
+
+        self.assertEqual(context.exception, Error("ed", ErrorKind.TAKE_WHILE_BOUNDED))
+
+    def test_take_while_bounded_no_match(self):
+        short_alpha = take_while_bounded(3, 6, is_alphabetic)
+        with self.assertRaises(Error) as context:
+            short_alpha("12345")
+
+        self.assertEqual(
+            context.exception, Error("12345", ErrorKind.TAKE_WHILE_BOUNDED)
+        )
+
     def test_is_a(self):
         self.assertEqual(
             is_a(stdstring.hexdigits)("123 and voila"), (" and voila", "123")
