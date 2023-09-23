@@ -35,6 +35,40 @@ class TestRepeat(unittest.TestCase):
     def test_count_on_incomplete_match(self):
         self.assertEqual(count(tag("abc"), 2)("abcabcabc"), ("abc", ["abc", "abc"]))
 
+    def test_fill(self):
+        buffer = ["", ""]
+
+        self.assertEqual(fill(tag("abc"), buffer)("abcabc"), ("", None))
+        self.assertEqual(buffer, ["abc", "abc"])
+
+    def test_fill_partial_fail(self):
+        buffer = ["", ""]
+
+        with self.assertRaises(Error) as context:
+            fill(tag("abc"), buffer)("abc123")
+
+        self.assertEqual(context.exception, Error("123", ErrorKind.TAG))
+
+    def test_fill_no_match(self):
+        buffer = ["", ""]
+
+        with self.assertRaises(Error) as context:
+            fill(tag("abc"), buffer)("123123")
+        self.assertEqual(context.exception, Error("123123", ErrorKind.TAG))
+
+    def test_fill_on_exhausted(self):
+        buffer = ["", ""]
+
+        with self.assertRaises(Error) as context:
+            fill(tag("abc"), buffer)("")
+        self.assertEqual(context.exception, Error("", ErrorKind.TAG))
+
+    def test_fill_partial_match(self):
+        buffer = ["", ""]
+
+        self.assertEqual(fill(tag("abc"), buffer)("abcabcabc"), ("abc", None))
+        self.assertEqual(buffer, ["abc", "abc"])
+
     def test_length_count(self):
         self.assertEqual(
             length_count(int_literal, tag("abc"))("2abcabc"),
