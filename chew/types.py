@@ -15,8 +15,8 @@ __all__ = [
 from typing import (
     Callable,
     Sequence,
+    TypeAlias,
     TypeVar,
-    Union,
 )
 
 # Elements of an arbitrary ParseSequence
@@ -25,13 +25,10 @@ V = TypeVar("V")
 # Underlying Parser Sequence to iterate over.
 #
 # May be a str, bytes, or an arbitrary sequence of elements (V).
-# str | bytes | Sequence[V]
-Parseable = Union[str, bytes, Sequence[V]]
+Parseable: TypeAlias = str | bytes | Sequence[V]
 
 # Potential Yielded Elements of the Parse Sequence
-#
-# str | int | V
-Element = Union[str, int, V]
+Element: TypeAlias = str | int | V
 
 # Generic Parse Sequence.
 S = TypeVar("S", bound=Parseable)
