@@ -1,6 +1,7 @@
 """
 Generic parser generators.
 """
+# pylint: disable=invalid-name
 __all__ = [
     "take",
     "take_till",

@@ -1,7 +1,6 @@
 """
 Parsers that operate on strings.
 """
-# pylint: disable=invalid-name
 __all__ = [
     "satisfy",
     "char",
@@ -129,7 +128,7 @@ def alpha0(sequence: str) -> Result[str, str]:
     """
     Recognizes zero or more uppercase alphabetic characters.
     """
-    return take_while(is_alphabetic)(sequence)
+    return take_while(is_alphabetic)(sequence)  # type: ignore
 
 
 def alpha1(sequence: str) -> Result[str, str]:
