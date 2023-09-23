@@ -1,16 +1,23 @@
 """
 Combinators applying their child parser multiple times.
 """
-__all__ = ["count", "fill", "length_count", "length_data", "length_value"]
+__all__ = ["count", "fill", "fold_many0", "length_count", "length_data", "length_value"]
 # pylint: disable=invalid-name
-from typing import MutableSequence, Sequence, TypeVar
+from typing import MutableSequence, Callable, Sequence, TypeVar
 from chew.types import Parser, Result, S
+from chew.error import Error
 from chew.generic import take
+from chew.primitive import eof
 
 # Generic Yielded Element
 #
 # Yielded element from a Parser that we care about.
 Y = TypeVar("Y")
+
+# Arbitrary
+#
+# Aribtrary Held Value.
+A = TypeVar("A")
 
 
 def count(parser: Parser[S, Y], times: int) -> Parser[S, Sequence[Y]]:
@@ -45,6 +52,38 @@ def fill(parser: Parser[S, Y], buffer: MutableSequence[Y]) -> Parser[S, None]:
         return (current, None)
 
     return _fill
+
+
+def fold_many0(
+    parser: Parser[S, Y], constructor: Callable[[], A], gather: Callable[[A, Y], A]
+):
+    """
+    Repeats the parser, calling `gather` to gather the results.
+
+    Constructs an accumulator A using the passed constructor `constr`. For each
+    yielded element, calls `gather` to modify the accumulator.
+
+    Returns on an exhausted sequence to prevent an infinite loop with parsers
+    that accept empty inputs.
+    """
+
+    def _fold_many0(sequence: S) -> Result[S, A]:
+        accumulator: A = constructor()
+        current = sequence
+
+        while True:
+            if eof(sequence):
+                break
+
+            try:
+                (current, value) = parser(current)
+                accumulator = gather(accumulator, value)
+            except Error:
+                break
+
+        return (current, accumulator)
+
+    return _fold_many0
 
 
 def length_count(

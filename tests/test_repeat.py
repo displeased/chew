@@ -6,6 +6,7 @@ from chew.error import Error, ErrorKind
 from chew.repeat import *
 
 # TESTING IMPORTS
+from chew.string import alpha0
 from chew.generic import tag
 from chew.literal import int_literal
 
@@ -68,6 +69,42 @@ class TestRepeat(unittest.TestCase):
 
         self.assertEqual(fill(tag("abc"), buffer)("abcabcabc"), ("abc", None))
         self.assertEqual(buffer, ["abc", "abc"])
+
+    def test_fold_many0(self):
+        def list_append(acc, item):
+            acc.append(item)
+            return acc
+
+        parser = fold_many0(tag("abc"), list, list_append)
+        self.assertEqual(parser("abcabc"), ("", ["abc", "abc"]))
+
+    def test_fold_many0_partial(self):
+        def list_append(acc, item):
+            acc.append(item)
+            return acc
+
+        parser = fold_many0(tag("abc"), list, list_append)
+        self.assertEqual(parser("abc123"), ("123", ["abc"]))
+
+    def test_fold_many0_no_match(self):
+        def list_append(acc, item):
+            acc.append(item)
+            return acc
+
+        parser = fold_many0(tag("abc"), list, list_append)
+        self.assertEqual(parser("123123"), ("123123", []))
+
+    def test_fold_many0_on_exhausted(self):
+        def list_append(acc, item):
+            acc.append(item)
+            return acc
+
+        parser = fold_many0(tag("abc"), list, list_append)
+        self.assertEqual(parser(""), ("", []))
+
+    def test_fold_many0_on_empty_allowed(self):
+        parser = fold_many0(alpha0, list, lambda acc, item: acc)
+        self.assertEqual(parser(""), ("", []))
 
     def test_length_count(self):
         self.assertEqual(
