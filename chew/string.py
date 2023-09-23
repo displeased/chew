@@ -129,9 +129,7 @@ def alpha0(sequence: str) -> Result[str, str]:
     """
     Recognizes zero or more uppercase alphabetic characters.
     """
-    with ignore_kind(ErrorKind.IS_A):
-        return take_while(is_alphabetic)(sequence)
-    return (sequence, "")
+    return take_while(is_alphabetic)(sequence)
 
 
 def alpha1(sequence: str) -> Result[str, str]:
