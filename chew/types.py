@@ -40,18 +40,18 @@ E = TypeVar("E", bound=Element)
 Matcher = Callable[[E], bool]
 
 # Yielded Value of a Parser
-T = TypeVar("T")
+Y = TypeVar("Y")
 
 # Return Value of a Parser
 #
 # A tuple with the first element being the remaining slice to parse, and the
 # second being the yielded value of the parser.
-Result = tuple[S, T]
+Result = tuple[S, Y]
 
 # Parser
 #
 # A Parser is generic over its input sequence type and its return value type.
-Parser = Callable[[S], Result[S, T]]
+Parser = Callable[[S], Result[S, Y]]
 
 # Sub-Type of a Parser that operates on Strings
 StringParser = Parser[str, str]
