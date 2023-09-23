@@ -25,6 +25,9 @@ coverage = {extras = ["toml"], version = "^7.3.1"}
 version_toml = ["pyproject.toml:tool.poetry.version"]
 commit_message = "chore: v{version} release"
 
+[tool.coverage.run]
+omit = ["tests/*.py"]
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
