@@ -1,7 +1,7 @@
 """
 General purpose combinators.
 """
-# pylint: disable=invalid-name
+# pylint: disable=invalid-name, raise-missing-from
 __all__ = [
     "all_consuming",
     "conditional",
@@ -22,7 +22,7 @@ __all__ = [
     "noerr_value",
     "verify",
 ]
-from typing import TypeVar, NoReturn, Optional, Generator, Generic
+from typing import TypeVar, NoReturn, Optional, Generic
 import dataclasses
 from chew.error import Error, ErrorKind, map_exception
 from chew.types import (
