@@ -3,6 +3,7 @@ Test cases for the `repeat` module.
 """
 import unittest
 from typing import TypeVar
+from tests import assert_error
 from chew.error import Error, ErrorKind
 from chew.repeat import *
 
@@ -19,22 +20,16 @@ class TestRepeat(unittest.TestCase):
         self.assertEqual(count(tag("abc"), 2)("abcabc"), ("", ["abc", "abc"]))
 
     def test_count_fail_on_second(self):
-        with self.assertRaises(Error) as context:
+        with assert_error(self, Error("123", ErrorKind.TAG)):
             count(tag("abc"), 2)("abc123")
 
-        self.assertEqual(context.exception, Error("123", ErrorKind.TAG))
-
     def test_count_fail_on_both(self):
-        with self.assertRaises(Error) as context:
+        with assert_error(self, Error("123123", ErrorKind.TAG)):
             count(tag("abc"), 2)("123123")
 
-        self.assertEqual(context.exception, Error("123123", ErrorKind.TAG))
-
     def test_count_on_exhausted(self):
-        with self.assertRaises(Error) as context:
+        with assert_error(self, Error("", ErrorKind.TAG)):
             count(tag("abc"), 2)("")
-
-        self.assertEqual(context.exception, Error("", ErrorKind.TAG))
 
     def test_count_on_incomplete_match(self):
         self.assertEqual(count(tag("abc"), 2)("abcabcabc"), ("abc", ["abc", "abc"]))
@@ -48,24 +43,20 @@ class TestRepeat(unittest.TestCase):
     def test_fill_partial_fail(self):
         buffer = ["", ""]
 
-        with self.assertRaises(Error) as context:
+        with assert_error(self, Error("123", ErrorKind.TAG)):
             fill(tag("abc"), buffer)("abc123")
-
-        self.assertEqual(context.exception, Error("123", ErrorKind.TAG))
 
     def test_fill_no_match(self):
         buffer = ["", ""]
 
-        with self.assertRaises(Error) as context:
+        with assert_error(self, Error("123123", ErrorKind.TAG)):
             fill(tag("abc"), buffer)("123123")
-        self.assertEqual(context.exception, Error("123123", ErrorKind.TAG))
 
     def test_fill_on_exhausted(self):
         buffer = ["", ""]
 
-        with self.assertRaises(Error) as context:
+        with assert_error(self, Error("", ErrorKind.TAG)):
             fill(tag("abc"), buffer)("")
-        self.assertEqual(context.exception, Error("", ErrorKind.TAG))
 
     def test_fill_partial_match(self):
         buffer = ["", ""]
@@ -109,15 +100,13 @@ class TestRepeat(unittest.TestCase):
 
     def test_fold_many1_no_match(self):
         parser = fold_many1(tag("abc"), list, list_append)
-        with self.assertRaises(Error) as context:
+        with assert_error(self, Error("123123", ErrorKind.MANY1)):
             parser("123123")
-        self.assertEqual(context.exception, Error("123123", ErrorKind.MANY1))
 
     def test_fold_many1_on_exhausted(self):
         parser = fold_many1(tag("abc"), list, list_append)
-        with self.assertRaises(Error) as context:
+        with assert_error(self, Error("", ErrorKind.MANY1)):
             parser("")
-        self.assertEqual(context.exception, Error("", ErrorKind.MANY1))
 
     def test_fold_many_bounded(self):
         parser = fold_many_bounded(1, 2, tag("abc"), list, list_append)
@@ -129,11 +118,8 @@ class TestRepeat(unittest.TestCase):
 
     def test_fold_many_bounded_no_match(self):
         parser = fold_many_bounded(1, 2, tag("abc"), list, list_append)
-        with self.assertRaises(Error) as context:
+        with assert_error(self, Error("123123", ErrorKind.FOLD_MANY_BOUNDED)):
             parser("123123")
-        self.assertEqual(
-            context.exception, Error("123123", ErrorKind.FOLD_MANY_BOUNDED)
-        )
 
     def test_fold_many_bounded_on_exhausted(self):
         parser = fold_many_bounded(0, 2, tag("abc"), list, list_append)
@@ -144,19 +130,15 @@ class TestRepeat(unittest.TestCase):
         self.assertEqual(parser("abcabcabc"), ("abc", ["abc", "abc"]))
 
     def test_length_count_on_sub_failure(self):
-        with self.assertRaises(Error) as context:
+        with assert_error(self, Error("defdefdef", ErrorKind.TAG)):
             length_count(int_literal, tag("abc"))("3defdefdef")
-
-        self.assertEqual(context.exception, Error("defdefdef", ErrorKind.TAG))
 
     def test_length_data(self):
         self.assertEqual(length_data(int_literal)("3abcefg"), ("efg", "abc"))
 
     def test_length_data_on_tiny(self):
-        with self.assertRaises(Error) as context:
+        with assert_error(self, Error("a", ErrorKind.EOF)):
             length_data(int_literal)("3a")
-
-        self.assertEqual(context.exception, Error("a", ErrorKind.EOF))
 
     def test_length_value(self):
         self.assertEqual(
@@ -164,16 +146,12 @@ class TestRepeat(unittest.TestCase):
         )
 
     def test_length_value_on_sub_failure(self):
-        with self.assertRaises(Error) as context:
+        with assert_error(self, Error("def", ErrorKind.TAG)):
             length_value(int_literal, tag("abc"))("3defdef")
 
-        self.assertEqual(context.exception, Error("def", ErrorKind.TAG))
-
     def test_length_value_on_tiny(self):
-        with self.assertRaises(Error) as context:
+        with assert_error(self, Error("a", ErrorKind.EOF)):
             length_value(int_literal, tag("abc"))("3a")
-
-        self.assertEqual(context.exception, Error("a", ErrorKind.EOF))
 
 
 def list_append(acc: list[T], item: T) -> list[T]:

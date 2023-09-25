@@ -3,6 +3,7 @@ Test Cases for the `literal` module.
 """
 
 import unittest
+from tests import assert_error
 from chew.error import Error, ErrorKind
 from chew.literal import int_literal, float_literal
 
@@ -15,10 +16,8 @@ class TestLiteral(unittest.TestCase):
         self.assertEqual(int_literal("22456a"), ("a", 22456))
 
     def test_int_literal_no_match(self):
-        with self.assertRaises(Error) as context:
+        with assert_error(self, Error("abcdef", ErrorKind.INTEGER)):
             int_literal("abcdef")
-
-        self.assertEqual(context.exception, Error("abcdef", ErrorKind.INTEGER))
 
     def test_int_literal_long(self):
         self.assertEqual(
@@ -51,8 +50,5 @@ class TestLiteral(unittest.TestCase):
         self.assertEqual(float_literal("3.14_15_93"), ("", 3.14_15_93))
 
     def test_float_literal_no_match(self):
-        with self.assertRaises(Error) as context:
+        with assert_error(self, Error("abcdef", ErrorKind.FLOAT)):
             float_literal("abcdef")
-
-        self.assertEqual(context.exception.remaining, "abcdef")
-        self.assertEqual(context.exception.kind, ErrorKind.FLOAT)
