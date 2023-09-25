@@ -44,6 +44,7 @@ class ErrorKind(enum.Enum):
     MANY1 = 27
     FOLD_MANY_BOUNDED = 28
     MANY1_COUNT = 29
+    MANY_BOUNDED = 30
 
 
 @dataclasses.dataclass

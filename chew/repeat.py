@@ -14,6 +14,7 @@ __all__ = [
     "many0_count",
     "many1",
     "many1_count",
+    "many_bounded",
 ]
 # pylint: disable=invalid-name
 from typing import MutableSequence, Callable, Sequence, TypeVar, Optional
@@ -296,3 +297,30 @@ def many1_count(parser: Parser[S, Y]) -> Parser[S, int]:
         return result
 
     return _many1_count
+
+
+def many_bounded(
+    lower: int, upper: int, parser: Parser[S, Y]
+) -> Parser[S, Sequence[Y]]:
+    def _many_bounded(sequence: S) -> Result[S, Sequence[Y]]:
+        result = []
+        matches = 0
+        current = sequence
+        while True:
+            try:
+                if eof(current):
+                    break
+                (current, value) = parser(current)
+                result.append(value)
+                matches += 1
+            except Error:
+                break
+            if matches == upper:
+                break
+
+        if matches < lower:
+            raise Error(sequence, ErrorKind.MANY_BOUNDED)
+
+        return (current, result)
+
+    return _many_bounded

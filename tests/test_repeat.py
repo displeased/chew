@@ -214,6 +214,30 @@ class TestRepeat(unittest.TestCase):
     def test_many1_count_on_infinite(self):
         self.assertEqual(many1_count(alpha0)("abc"), ("", 1))
 
+    def test_many_bounded(self):
+        parser = many_bounded(0, 2, tag("abc"))
+        self.assertEqual(parser("abcabc"), ("", ["abc", "abc"]))
+
+    def test_many_bounded_partial_match(self):
+        parser = many_bounded(0, 2, tag("abc"))
+        self.assertEqual(parser("abc123"), ("123", ["abc"]))
+
+    def test_many_bounded_no_match(self):
+        parser = many_bounded(0, 2, tag("abc"))
+        self.assertEqual(parser("123123"), ("123123", []))
+
+    def test_many_bounded_on_exhausted(self):
+        parser = many_bounded(0, 2, tag("abc"))
+        self.assertEqual(parser(""), ("", []))
+
+    def test_many_bounded_on_limit(self):
+        parser = many_bounded(0, 2, tag("abc"))
+        self.assertEqual(parser(""), ("", []))
+
+    def test_many_bounded_on_infinite(self):
+        parser = many_bounded(0, 2, alpha0)
+        self.assertEqual(parser("abc"), ("", ["abc"]))
+
 
 def list_append(acc: list[T], item: T) -> list[T]:
     acc.append(item)
