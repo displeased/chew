@@ -2,6 +2,76 @@
 
 
 
+## v3.1.0 (2023-09-24)
+
+### Chore
+
+* chore: updated dependencies ([`91eb8f3`](https://github.com/srv/git/chew/commit/91eb8f34b5bdc1bc9a6a4db01b6f74c9a1b3ba85))
+
+* chore: added coverage.py to dev dependencies ([`ff0434a`](https://github.com/srv/git/chew/commit/ff0434a03cb14339898a6067b2d7ed24312d16e1))
+
+### Feature
+
+* feat: added new function `fold_many_bounded` ([`1ed1fdf`](https://github.com/srv/git/chew/commit/1ed1fdf2501562f93cc2417f600f7c6dbb7985c3))
+
+* feat: added function fold_many1 ([`836d131`](https://github.com/srv/git/chew/commit/836d131bd0d8ad1dc42b89a7823029fc92762683))
+
+* feat: added fold_many0 function to repeat mod
+
+Added function for supporting custom accumulation operations over a set
+of values. ([`b4ee58d`](https://github.com/srv/git/chew/commit/b4ee58d196c4e73a2e58edf03a8da2d48d7dc625))
+
+* feat: added fn fill for filling buffers of content ([`c20d89a`](https://github.com/srv/git/chew/commit/c20d89afd855a4a9355c15ccfd2b4f6860d2e197))
+
+* feat: added generic fn take_while_bounded
+
+Added function `take_while_bounded` which resembles nom&#39;s
+`take_while_m_n` for using `take_while` a bounded number of times. ([`75e759c`](https://github.com/srv/git/chew/commit/75e759c9afc30048b2457d75af08ba242a5333bc))
+
+* feat: added new match fn is_alphabetic
+
+Added `is_alphabetic` function, which implements the `Matcher` interface
+for string sequences to make matching characters easier. ([`52b800c`](https://github.com/srv/git/chew/commit/52b800cfefa245770dfaf633cb29819abf9ae8de))
+
+* feat: added generic function test_while1 ([`b3c72fd`](https://github.com/srv/git/chew/commit/b3c72fd79dcbcdefd3c609b9445dc14ad77bc4c9))
+
+* feat: added generic function take_until1 ([`c0b3454`](https://github.com/srv/git/chew/commit/c0b3454641f31d4c8ede444b865c60dfa2cb34b7))
+
+* feat: added new generic function take_until ([`396402f`](https://github.com/srv/git/chew/commit/396402f6fa1406871a7090892711123318b93dc1))
+
+* feat: added new fn take_till1 to generic fns ([`7280c80`](https://github.com/srv/git/chew/commit/7280c800353f829c83fe17dc8732282b4e89f148))
+
+* feat: added parser tag_no_case for case-insensitive parsing ([`07d645c`](https://github.com/srv/git/chew/commit/07d645cdac6eb701e2eb7f61f7e953cbbd0de2d5))
+
+### Fix
+
+* fix: fixed type checking issues with new fns ([`446156a`](https://github.com/srv/git/chew/commit/446156a0d22945e5e09508902f086071c81c8823))
+
+### Refactor
+
+* refactor: changed `fill` to accept a wider range of types ([`abddcd3`](https://github.com/srv/git/chew/commit/abddcd3bbffbe97a53afac6d9d748a0bcc91586b))
+
+* refactor: changed type hinting names in types mod ([`d154b8c`](https://github.com/srv/git/chew/commit/d154b8c4a1ca17e5e26026bd59d333f2e152f16c))
+
+* refactor: updated syntax of union aliases in types ([`72f34db`](https://github.com/srv/git/chew/commit/72f34db483212ed936bd6d5daf606c9b65b9dfd8))
+
+* refactor: removed unnecessary error check in alpha0 ([`a274852`](https://github.com/srv/git/chew/commit/a274852cbbef47bc0772442aa790cae6ed4907ae))
+
+* refactor: replaced underlying calls in is_a &amp; is_not
+
+Replaced underlying calls in is_a and is_not to take_while1. ([`f50e664`](https://github.com/srv/git/chew/commit/f50e6648073b05af823af096cfc1b5ff6ffc9403))
+
+* refactor: moved function _min_one into generic mod ([`8fde8c6`](https://github.com/srv/git/chew/commit/8fde8c6ad95c1d83d910d203604036f1c13319cb))
+
+* refactor: removed now-unused import from error module ([`a12887b`](https://github.com/srv/git/chew/commit/a12887b3f5f07cf4be257cf649105bb955a8ff37))
+
+### Test
+
+* test: added coverage.py settings to pyproject.toml ([`d9b4d51`](https://github.com/srv/git/chew/commit/d9b4d51ace4f5337abe3877ddd0f62322d1c7b5b))
+
+* test: refactored tests to use new matcher ([`9e36bef`](https://github.com/srv/git/chew/commit/9e36befab985cddec58212aa184fa21aa7cf1066))
+
+
 ## v3.0.0 (2023-09-22)
 
 ### Breaking
