@@ -2,6 +2,7 @@
 Test cases for the `repeat` module.
 """
 import unittest
+from typing import TypeVar
 from chew.error import Error, ErrorKind
 from chew.repeat import *
 
@@ -9,6 +10,8 @@ from chew.repeat import *
 from chew.string import alpha0
 from chew.generic import tag
 from chew.literal import int_literal
+
+T = TypeVar("T")
 
 
 class TestRepeat(unittest.TestCase):
@@ -71,34 +74,18 @@ class TestRepeat(unittest.TestCase):
         self.assertEqual(buffer, ["abc", "abc"])
 
     def test_fold_many0(self):
-        def list_append(acc, item):
-            acc.append(item)
-            return acc
-
         parser = fold_many0(tag("abc"), list, list_append)
         self.assertEqual(parser("abcabc"), ("", ["abc", "abc"]))
 
     def test_fold_many0_partial(self):
-        def list_append(acc, item):
-            acc.append(item)
-            return acc
-
         parser = fold_many0(tag("abc"), list, list_append)
         self.assertEqual(parser("abc123"), ("123", ["abc"]))
 
     def test_fold_many0_no_match(self):
-        def list_append(acc, item):
-            acc.append(item)
-            return acc
-
         parser = fold_many0(tag("abc"), list, list_append)
         self.assertEqual(parser("123123"), ("123123", []))
 
     def test_fold_many0_on_exhausted(self):
-        def list_append(acc, item):
-            acc.append(item)
-            return acc
-
         parser = fold_many0(tag("abc"), list, list_append)
         self.assertEqual(parser(""), ("", []))
 
@@ -113,40 +100,48 @@ class TestRepeat(unittest.TestCase):
         )
 
     def test_fold_many1(self):
-        def list_append(acc, item):
-            acc.append(item)
-            return acc
-
         parser = fold_many1(tag("abc"), list, list_append)
         self.assertEqual(parser("abcabc"), ("", ["abc", "abc"]))
 
     def test_fold_many1_partial(self):
-        def list_append(acc, item):
-            acc.append(item)
-            return acc
-
         parser = fold_many1(tag("abc"), list, list_append)
         self.assertEqual(parser("abc123"), ("123", ["abc"]))
 
     def test_fold_many1_no_match(self):
-        def list_append(acc, item):
-            acc.append(item)
-            return acc
-
         parser = fold_many1(tag("abc"), list, list_append)
         with self.assertRaises(Error) as context:
             parser("123123")
         self.assertEqual(context.exception, Error("123123", ErrorKind.MANY1))
 
     def test_fold_many1_on_exhausted(self):
-        def list_append(acc, item):
-            acc.append(item)
-            return acc
-
         parser = fold_many1(tag("abc"), list, list_append)
         with self.assertRaises(Error) as context:
             parser("")
         self.assertEqual(context.exception, Error("", ErrorKind.MANY1))
+
+    def test_fold_many_bounded(self):
+        parser = fold_many_bounded(1, 2, tag("abc"), list, list_append)
+        self.assertEqual(parser("abcabc"), ("", ["abc", "abc"]))
+
+    def test_fold_many_bounded_one_match(self):
+        parser = fold_many_bounded(1, 2, tag("abc"), list, list_append)
+        self.assertEqual(parser("abc123"), ("123", ["abc"]))
+
+    def test_fold_many_bounded_no_match(self):
+        parser = fold_many_bounded(1, 2, tag("abc"), list, list_append)
+        with self.assertRaises(Error) as context:
+            parser("123123")
+        self.assertEqual(
+            context.exception, Error("123123", ErrorKind.FOLD_MANY_BOUNDED)
+        )
+
+    def test_fold_many_bounded_on_exhausted(self):
+        parser = fold_many_bounded(0, 2, tag("abc"), list, list_append)
+        self.assertEqual(parser(""), ("", []))
+
+    def test_fold_many_bounded_on_incomplete(self):
+        parser = fold_many_bounded(0, 2, tag("abc"), list, list_append)
+        self.assertEqual(parser("abcabcabc"), ("abc", ["abc", "abc"]))
 
     def test_length_count_on_sub_failure(self):
         with self.assertRaises(Error) as context:
@@ -179,3 +174,8 @@ class TestRepeat(unittest.TestCase):
             length_value(int_literal, tag("abc"))("3a")
 
         self.assertEqual(context.exception, Error("a", ErrorKind.EOF))
+
+
+def list_append(acc: list[T], item: T) -> list[T]:
+    acc.append(item)
+    return acc

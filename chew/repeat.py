@@ -6,6 +6,7 @@ __all__ = [
     "fill",
     "fold_many0",
     "fold_many1",
+    "fold_many_bounded",
     "length_count",
     "length_data",
     "length_value",
@@ -107,6 +108,38 @@ def fold_many1(
     that accept empty inputs.
     """
     return _min_one(fold_many0(parser, constructor, gather), ErrorKind.MANY1)
+
+
+def fold_many_bounded(
+    lower: int,
+    upper: int,
+    parser: Parser[S, Y],
+    constructor: Callable[[], A],
+    gather: Callable[[A, Y], A],
+):
+    """
+    Repeats the parser, calling `gather` to gather the results.
+    """
+
+    def _fold_many_bounded(sequence: S) -> Result[S, A]:
+        accumulator: A = constructor()
+        current = sequence
+        runs = 0
+
+        while runs < upper:
+            try:
+                (current, value) = parser(current)
+                accumulator = gather(accumulator, value)
+                runs += 1
+            except Error:
+                break
+
+        if runs < lower:
+            raise Error(sequence, ErrorKind.FOLD_MANY_BOUNDED)
+
+        return (current, accumulator)
+
+    return _fold_many_bounded
 
 
 def length_count(

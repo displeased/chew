@@ -42,6 +42,7 @@ class ErrorKind(enum.Enum):
     TAKE_WHILE = 25
     TAKE_WHILE_BOUNDED = 26
     MANY1 = 27
+    FOLD_MANY_BOUNDED = 28
 
 
 @dataclasses.dataclass
