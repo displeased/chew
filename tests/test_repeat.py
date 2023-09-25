@@ -168,6 +168,18 @@ class TestRepeat(unittest.TestCase):
     def test_many0_on_infinite(self):
         self.assertEqual(many0(alpha0)("abc"), ("", ["abc"]))
 
+    def test_many0_count(self):
+        self.assertEqual(many0_count(tag("abc"))("abcabc"), ("", 2))
+
+    def test_many0_count_on_partial(self):
+        self.assertEqual(many0_count(tag("abc"))("abc123"), ("123", 1))
+
+    def test_many0_count_on_no_matches(self):
+        self.assertEqual(many0_count(tag("abc"))("123123"), ("123123", 0))
+
+    def test_many0_count_on_exhausted(self):
+        self.assertEqual(many0_count(tag("abc"))(""), ("", 0))
+
 
 def list_append(acc: list[T], item: T) -> list[T]:
     acc.append(item)

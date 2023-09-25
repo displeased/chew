@@ -11,6 +11,7 @@ __all__ = [
     "length_data",
     "length_value",
     "many0",
+    "many0_count",
 ]
 # pylint: disable=invalid-name
 from typing import MutableSequence, Callable, Sequence, TypeVar
@@ -219,3 +220,26 @@ def many0(parser: Parser[S, Y]) -> Parser[S, Sequence[Y]]:
         return acc
 
     return fold_many0(parser, list, lappend)  # type: ignore
+
+
+def many0_count(parser: Parser[S, Y]) -> Parser[S, int]:
+    """
+    Repeats the embedded parser, counting the number of successes before a
+    failure.
+    """
+
+    def _many0_count(sequence: S) -> Result[S, int]:
+        consecutive = 0
+        current = sequence
+        while True:
+            if eof(current):
+                break
+            try:
+                (current, _) = parser(current)
+                consecutive += 1
+            except Error:
+                break
+
+        return (current, consecutive)
+
+    return _many0_count
