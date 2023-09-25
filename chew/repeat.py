@@ -12,9 +12,10 @@ __all__ = [
     "length_value",
     "many0",
     "many0_count",
+    "many1",
 ]
 # pylint: disable=invalid-name
-from typing import MutableSequence, Callable, Sequence, TypeVar
+from typing import MutableSequence, Callable, Sequence, TypeVar, Optional
 from chew.types import Parser, Result, S
 from chew.error import Error, ErrorKind
 from chew.generic import take, _min_one, I
@@ -243,3 +244,37 @@ def many0_count(parser: Parser[S, Y]) -> Parser[S, int]:
         return (current, consecutive)
 
     return _many0_count
+
+
+def many1(parser: Parser[S, Y]) -> Parser[S, Sequence[Y]]:
+    """
+    Runs the embedded Parser, raising an Error if the embedded Parser does not
+    exit with a success at least once.
+    """
+
+    def _many1(sequence: S) -> Result[S, Sequence[Y]]:
+        once = False
+        result = []
+        current = sequence
+        last_raised: Optional[Error] = None
+
+        while True:
+            try:
+                (current, value) = parser(current)
+                result.append(value)
+                once = True
+            except Error as error:
+                last_raised = error
+                break
+            if eof(current):
+                break
+
+        if not once:
+            kind = ErrorKind.MANY1
+            if last_raised is not None:
+                kind = last_raised.kind
+            raise Error(sequence, kind)
+
+        return (current, result)
+
+    return _many1
