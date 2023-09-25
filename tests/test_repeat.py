@@ -153,6 +153,21 @@ class TestRepeat(unittest.TestCase):
         with assert_error(self, Error("a", ErrorKind.EOF)):
             length_value(int_literal, tag("abc"))("3a")
 
+    def test_many0(self):
+        self.assertEqual(many0(tag("abc"))("abcabc"), ("", ["abc", "abc"]))
+
+    def test_many0_on_partial(self):
+        self.assertEqual(many0(tag("abc"))("abc123"), ("123", ["abc"]))
+
+    def test_many0_on_no_matches(self):
+        self.assertEqual(many0(tag("abc"))("123123"), ("123123", []))
+
+    def test_many0_on_exhausted(self):
+        self.assertEqual(many0(tag("abc"))(""), ("", []))
+
+    def test_many0_on_infinite(self):
+        self.assertEqual(many0(alpha0)("abc"), ("", ["abc"]))
+
 
 def list_append(acc: list[T], item: T) -> list[T]:
     acc.append(item)
