@@ -13,6 +13,7 @@ __all__ = [
     "many0",
     "many0_count",
     "many1",
+    "many1_count",
 ]
 # pylint: disable=invalid-name
 from typing import MutableSequence, Callable, Sequence, TypeVar, Optional
@@ -278,3 +279,20 @@ def many1(parser: Parser[S, Y]) -> Parser[S, Sequence[Y]]:
         return (current, result)
 
     return _many1
+
+
+def many1_count(parser: Parser[S, Y]) -> Parser[S, int]:
+    """
+    Runs the Parser as many time as possible, counting the results.
+    """
+
+    def _many1_count(sequence: S) -> Result[S, int]:
+        result = many0_count(parser)(sequence)
+
+        (_, icount) = result
+        if icount < 1:
+            raise Error(sequence, ErrorKind.MANY1_COUNT)
+
+        return result
+
+    return _many1_count
