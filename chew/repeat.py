@@ -210,26 +210,12 @@ def many0(parser: Parser[S, Y]) -> Parser[S, Sequence[Y]]:
     """
     Repeats the parser, calling the results into a Sequence.
 
-    Constructs an accumulator A using the passed constructor `constr`. For each
-    yielded element, calls `gather` to modify the accumulator.
-
     Returns on an exhausted sequence to prevent an infinite loop with parsers
     that accept empty inputs.
     """
 
-    def _many0(sequence: S) -> Result[S, Sequence[Y]]:
-        current = sequence
-        results: list[Y] = []
+    def lappend(acc: list[Y], item: Y) -> list[Y]:
+        acc.append(item)
+        return acc
 
-        while True:
-            if eof(current):
-                break
-            try:
-                (current, value) = parser(current)
-                results.append(value)
-            except Error:
-                break
-
-        return (current, results)
-
-    return _many0
+    return fold_many0(parser, list, lappend)
