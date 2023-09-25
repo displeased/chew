@@ -69,7 +69,7 @@ def fill(parser: Parser[S, Y], buffer: MutableSequence[Y]) -> Parser[S, None]:
 
 def fold_many0(
     parser: Parser[S, Y], constructor: Callable[[], A], gather: Callable[[A, Y], A]
-):
+) -> Parser[S, A]:
     """
     Repeats the parser, calling `gather` to gather the results.
 
