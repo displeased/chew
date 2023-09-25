@@ -218,4 +218,4 @@ def many0(parser: Parser[S, Y]) -> Parser[S, Sequence[Y]]:
         acc.append(item)
         return acc
 
-    return fold_many0(parser, list, lappend)
+    return fold_many0(parser, list, lappend)  # type: ignore
