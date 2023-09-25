@@ -81,7 +81,7 @@ def fold_many0(
         current = sequence
 
         while True:
-            if eof(sequence):
+            if eof(current):
                 break
 
             try:
