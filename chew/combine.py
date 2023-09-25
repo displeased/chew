@@ -9,6 +9,7 @@ __all__ = [
     "eof",
     "fail",
     "flat_map",
+    "pariter",
     "map_res",
     "map_parser",
     "negate",
@@ -21,7 +22,8 @@ __all__ = [
     "noerr_value",
     "verify",
 ]
-from typing import TypeVar, NoReturn, Optional
+from typing import TypeVar, NoReturn, Optional, Generator, Generic
+import dataclasses
 from chew.error import Error, ErrorKind, map_exception
 from chew.types import (
     Parser,
@@ -40,6 +42,33 @@ T = TypeVar("T")
 #
 # Yielded element from a Parser that we care about.
 Y = TypeVar("Y")
+
+
+@dataclasses.dataclass
+class ParserIterator(Generic[S, Y]):
+    """
+    An Iterator constructed with a Parser over a Parseable.
+    """
+
+    current: S
+    parser: Parser[S, Y]
+
+    def __iter__(self):
+        return self
+
+    def __next__(self) -> Y:
+        try:
+            (new, value) = self.parser(self.current)
+            self.current = new
+            return value
+        except Error:
+            raise StopIteration
+
+    def finish(self) -> Result[S, None]:
+        """
+        Get the remaining input after iteration has been exhausted.
+        """
+        return (self.current, None)
 
 
 def all_consuming(child: Parser[S, Y]) -> Parser[S, Y]:
@@ -118,6 +147,13 @@ def flat_map(
         return applied(intermediate)(current)
 
     return _flat_map
+
+
+def pariter(sequence: S, parser: Parser[S, Y]) -> ParserIterator[S, Y]:
+    """
+    Creates a Generator from input data and a parser. Stops on an Error.
+    """
+    return ParserIterator(sequence, parser)
 
 
 def map_res(parser: Parser[S, T], mapper: Callable[[T], Y]) -> Parser[S, Y]:

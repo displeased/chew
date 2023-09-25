@@ -9,7 +9,7 @@ from chew.branch import alt
 from chew.generic import take, tag
 from chew.error import Error, ErrorKind
 from chew.literal import int_literal
-from chew.sequence import separated_pair
+from chew.sequence import separated_pair, terminated
 
 
 class TestCombine(unittest.TestCase):
@@ -86,6 +86,16 @@ class TestCombine(unittest.TestCase):
     def test_flat_map_no_match(self):
         with assert_error(self, Error("ab", ErrorKind.EOF)):
             flat_map(int_literal, take)("4ab")
+
+    def test_pariter(self):
+        data = "abc|defg|hijkl|mnopqr|123"
+        iterator = pariter(data, terminated(alpha1, tag("|")))
+
+        collected = [(el, len(el)) for el in iterator]
+        self.assertEqual(
+            collected, [("abc", 3), ("defg", 4), ("hijkl", 5), ("mnopqr", 6)]
+        )
+        self.assertEqual(iterator.finish(), ("123", None))
 
     def test_map_res(self):
         self.assertEqual(
