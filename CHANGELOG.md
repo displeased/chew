@@ -2,7 +2,65 @@
 
 
 
-## v3.1.0 (2023-09-24)
+## v3.2.0 (2023-10-03)
+
+### Documentation
+
+* docs: added planning for future features ([`7405844`](https://github.com/srv/git/chew/commit/74058441f1dc8ca7e9331e517d7a1c972a25b859))
+
+### Feature
+
+* feat: added new combination separated_list1 ([`7ea361d`](https://github.com/srv/git/chew/commit/7ea361d7841dfd766a24fddb9e4dca72ff7d41ac))
+
+* feat: added new combinator separated_list0 ([`9412fde`](https://github.com/srv/git/chew/commit/9412fdeddb92457b8d81a92d5301448a6a0907dd))
+
+* feat: added combinator many_till ([`6bd9850`](https://github.com/srv/git/chew/commit/6bd985095a9e6253012c0774bd9152b37ea6dfdf))
+
+* feat: added function many_bounded ([`fec64ae`](https://github.com/srv/git/chew/commit/fec64aec64e3f1a04cbdcc9a43aaeef644a8afd7))
+
+* feat: added function many1_count to repeat ([`6c494cd`](https://github.com/srv/git/chew/commit/6c494cde463118d37251e155c56b48ab9a5bf1c1))
+
+* feat: added function many1 to repeat module ([`0ffb5c7`](https://github.com/srv/git/chew/commit/0ffb5c7abd5c3724136da71f54b32559e7157011))
+
+* feat: added new function many0_count
+
+Added new function for running an embedded parser and counting the
+number of successes. ([`241f0f3`](https://github.com/srv/git/chew/commit/241f0f3b413714e5477c7962e3ff8c55510a0c09))
+
+* feat: added new sequence function many0 ([`bc41429`](https://github.com/srv/git/chew/commit/bc41429fd921170f0de068dc8974003bae4f0322))
+
+* feat: added function for creating a parser iterator
+
+Added a function for creating an Iterator from a Parser over a Parseable
+sequence. ([`619851d`](https://github.com/srv/git/chew/commit/619851ddee83064d97e702557e432644fb089d95))
+
+### Fix
+
+* fix: fixed linting issues in combine module ([`4b028dc`](https://github.com/srv/git/chew/commit/4b028dc8d009fc5bc5e1dbbf6d66721d2c4b1ca4))
+
+* fix: fixed typing issues with many0 refactor ([`69b8e3d`](https://github.com/srv/git/chew/commit/69b8e3daed004150bd6bedd830bffd8bbce3d544))
+
+* fix: fixed issue with infinite match in fold_many0 ([`37eaa24`](https://github.com/srv/git/chew/commit/37eaa246256ffcda01bc6e58267f61c7b5619222))
+
+### Refactor
+
+* refactor: added type hints to return value of fold_many0 ([`32df4d5`](https://github.com/srv/git/chew/commit/32df4d520c6754144cda025bb33ea87cf7e5d2dd))
+
+* refactor: modified many0 to make use of existing fns
+
+Modified many0 to make an underlying call to fold_many0. ([`50bc530`](https://github.com/srv/git/chew/commit/50bc530d1874df36de4a30241828a62601d1e0f4))
+
+### Test
+
+* test: added complete tests to many_bounded ([`fa9890c`](https://github.com/srv/git/chew/commit/fa9890c04ba4ab7a1ac0264a28e9d1e36a4ab8f1))
+
+* test: added mechanism for asserting a specific Error
+
+Added a new helper method for asserting that a specific Error is raised,
+and replaced all instances of an old pattern with the new method. ([`8a7da25`](https://github.com/srv/git/chew/commit/8a7da25b8f9a477cfb504620614fac58f076ab0a))
+
+
+## v3.1.0 (2023-09-25)
 
 ### Chore
 
