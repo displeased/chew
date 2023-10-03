@@ -243,6 +243,30 @@ class TestRepeat(unittest.TestCase):
         with assert_error(self, Error("123123", ErrorKind.MANY_BOUNDED)):
             parser("123123")
 
+    def test_many_till(self):
+        parser = many_till(tag("abc"), tag("end"))
+        self.assertEqual(parser("abcabcend"), ("", (["abc", "abc"], "end")))
+
+    def test_many_till_interrupted(self):
+        parser = many_till(tag("abc"), tag("end"))
+        with assert_error(self, Error("123end", ErrorKind.TAG)):
+            parser("abc123end")
+
+    def test_many_till_no_match(self):
+        parser = many_till(tag("abc"), tag("end"))
+        with assert_error(self, Error("123123end", ErrorKind.TAG)):
+            parser("123123end")
+
+    def test_many_till_on_exhausted(self):
+        parser = many_till(tag("abc"), tag("end"))
+        with assert_error(self, Error("", ErrorKind.TAG)):
+            parser("")
+
+    def test_many_till_on_partial_match(self):
+        parser = many_till(tag("abc"), tag("end"))
+        self.assertEqual(parser("abcendefg"), ("efg", (["abc"], "end")))
+
+
 
 def list_append(acc: list[T], item: T) -> list[T]:
     acc.append(item)

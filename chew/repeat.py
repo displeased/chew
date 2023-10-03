@@ -15,6 +15,7 @@ __all__ = [
     "many1",
     "many1_count",
     "many_bounded",
+    "many_till",
 ]
 # pylint: disable=invalid-name
 from typing import MutableSequence, Callable, Sequence, TypeVar, Optional
@@ -328,3 +329,28 @@ def many_bounded(
         return (current, result)
 
     return _many_bounded
+
+
+def many_till(
+    applied: Parser[S, Y], marker: Parser[S, A]
+) -> Parser[S, tuple[Sequence[Y], A]]:
+    """
+    Applies the parser `applied` until the `marker` parser yields a result.
+    """
+
+    def _many_till(sequence: S) -> Result[S, tuple[Sequence[Y], A]]:
+        current = sequence
+        results = []
+        while True:
+            try:
+                (current, trailing) = marker(current)
+                break
+            except Error:
+                pass
+
+            (current, value) = applied(current)
+            results.append(value)
+
+        return (current, (results, trailing))
+
+    return _many_till
