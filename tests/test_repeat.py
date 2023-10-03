@@ -238,6 +238,11 @@ class TestRepeat(unittest.TestCase):
         parser = many_bounded(0, 2, alpha0)
         self.assertEqual(parser("abc"), ("", ["abc"]))
 
+    def test_many_bounded_not_enough(self):
+        parser = many_bounded(1, 2, tag("abc"))
+        with assert_error(self, Error("123123", ErrorKind.MANY_BOUNDED)):
+            parser("123123")
+
 
 def list_append(acc: list[T], item: T) -> list[T]:
     acc.append(item)

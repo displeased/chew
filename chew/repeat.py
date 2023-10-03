@@ -302,6 +302,10 @@ def many1_count(parser: Parser[S, Y]) -> Parser[S, int]:
 def many_bounded(
     lower: int, upper: int, parser: Parser[S, Y]
 ) -> Parser[S, Sequence[Y]]:
+    """
+    Repeats the parser within the given bounds.
+    """
+
     def _many_bounded(sequence: S) -> Result[S, Sequence[Y]]:
         result = []
         matches = 0
