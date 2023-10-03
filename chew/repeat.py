@@ -17,6 +17,7 @@ __all__ = [
     "many_bounded",
     "many_till",
     "separated_list0",
+    "separated_list1",
 ]
 # pylint: disable=invalid-name
 from typing import MutableSequence, Callable, Sequence, TypeVar, Optional
@@ -381,3 +382,38 @@ def separated_list0(
         return (lag, results)
 
     return _separated_list0
+
+
+def separated_list1(
+    separator: Parser[S, A], element: Parser[S, Y]
+) -> Parser[S, Sequence[Y]]:
+    """
+    Alternated between two parsers to produce a list of elements.
+    """
+
+    def _separated_list1(sequence: S) -> Result[S, Sequence[Y]]:
+        current = sequence
+        results = []
+        lag = current
+
+        run_once = False
+        underlying = None
+
+        while True:
+            try:
+                (current, value) = element(current)
+                results.append(value)
+                run_once = True
+
+                lag = current
+                (current, _) = separator(current)
+            except Error as error:
+                underlying = error
+                break
+
+        if (not run_once) and (underlying is not None):
+            raise Error(sequence, underlying.kind)
+
+        return (lag, results)
+
+    return _separated_list1
