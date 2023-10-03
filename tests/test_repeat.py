@@ -266,6 +266,25 @@ class TestRepeat(unittest.TestCase):
         parser = many_till(tag("abc"), tag("end"))
         self.assertEqual(parser("abcendefg"), ("efg", (["abc"], "end")))
 
+    def test_separated_list0(self):
+        parser = separated_list0(tag("|"), tag("abc"))
+        self.assertEqual(parser("abc|abc|abc"), ("", ["abc", "abc", "abc"]))
+
+    def test_separated_list0_no_next_tag(self):
+        parser = separated_list0(tag("|"), tag("abc"))
+        self.assertEqual(parser("abc123abc"), ("123abc", ["abc"]))
+
+    def test_separated_list0_not_following(self):
+        parser = separated_list0(tag("|"), tag("abc"))
+        self.assertEqual(parser("abc|def"), ("|def", ["abc"]))
+
+    def test_separated_list0_on_exhausted(self):
+        parser = separated_list0(tag("|"), tag("abc"))
+        self.assertEqual(parser(""), ("", []))
+
+    def test_separated_list0_no_match(self):
+        parser = separated_list0(tag("|"), tag("abc"))
+        self.assertEqual(parser("def|abc"), ("def|abc", []))
 
 
 def list_append(acc: list[T], item: T) -> list[T]:
